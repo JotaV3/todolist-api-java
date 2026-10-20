@@ -65,6 +65,7 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
+    @JsonIgnore
     public String getPassword() {
         return password;
     }
@@ -73,6 +74,7 @@ public class User implements Serializable {
         this.password = password;
     }
 
+    @JsonIgnore
     public List<Task> getTaskList() {
         return taskList;
     }

@@ -64,7 +64,6 @@ public class Task {
             this.taskStatusCode = taskStatus.getCode();
     }
 
-    @JsonIgnore
     public User getUser() {
         return user;
     }
