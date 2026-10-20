@@ -1,5 +1,6 @@
 package com.jotave.todolist.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jotave.todolist.entities.enums.TaskStatus;
 import jakarta.persistence.*;
 
@@ -15,15 +16,19 @@ public class Task {
     private String description;
     private Integer taskStatusCode;
 
+    @ManyToOne
+    private User user;
+
     public Task(){
 
     }
 
-    public Task(Long id, String title, String description, TaskStatus taskStatusCode) {
+    public Task(Long id, String title, String description, TaskStatus taskStatusCode, User user) {
         this.id = id;
         this.title = title;
         this.description = description;
         setTaskStatusCode(taskStatusCode);
+        this.user = user;
     }
 
     public Long getId() {
@@ -55,8 +60,17 @@ public class Task {
     }
 
     public void setTaskStatusCode(TaskStatus taskStatus) {
-        if(taskStatusCode != null)
+        if(taskStatus != null)
             this.taskStatusCode = taskStatus.getCode();
+    }
+
+    @JsonIgnore
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
