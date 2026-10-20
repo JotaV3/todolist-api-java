@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jotave.todolist.entities.enums.TaskStatus;
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "tb_task")
-public class Task {
+public class Task implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
