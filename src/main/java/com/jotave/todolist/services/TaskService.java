@@ -3,6 +3,7 @@ package com.jotave.todolist.services;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.repositories.TaskRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -39,5 +40,23 @@ public class TaskService {
         task.setUser(user);
 
         return repository.save(task);
+    }
+
+    public Task update(Long id, Task data){
+        try{
+            Task task = repository.getReferenceById(id);
+            updateTaskData(task, data);
+
+            return repository.save(task);
+        }
+        catch(EntityNotFoundException e){
+            throw new ResourceNotFoundException(id);
+        }
+    }
+
+    private void updateTaskData(Task task, Task data){
+        task.setTitle(data.getTitle());
+        task.setDescription(data.getDescription());
+        task.setTaskStatusCode(data.getTaskStatusCode());
     }
 }

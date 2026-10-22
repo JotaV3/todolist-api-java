@@ -37,4 +37,11 @@ public class TaskResource {
 
         return ResponseEntity.created(uri).body(task);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> update(@PathVariable Long id, @RequestBody Task task){
+        task = service.update(id, task);
+
+        return ResponseEntity.ok().body(task);
+    }
 }
