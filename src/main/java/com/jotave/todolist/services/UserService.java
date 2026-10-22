@@ -23,4 +23,8 @@ public class UserService {
 
         return optionalUser.orElseThrow(() -> new ResourceNotFoundException(id));
     }
+
+    public User insert(User user){
+        return repository.save(user);
+    }
 }
