@@ -1,4 +1,4 @@
-package com.jotave.todolist.services;
+package com.jotave.todolist.services.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(Object id) {

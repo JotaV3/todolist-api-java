@@ -2,6 +2,7 @@ package com.jotave.todolist.services;
 
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.repositories.UserRepository;
+import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
