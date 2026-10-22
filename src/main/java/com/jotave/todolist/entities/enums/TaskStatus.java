@@ -5,7 +5,7 @@ public enum TaskStatus {
     InProgress(2),
     Paused(3);
 
-    private int code;
+    private final int code;
 
     private TaskStatus(int code){
         this.code = code;
@@ -13,10 +13,6 @@ public enum TaskStatus {
 
     public int getCode() {
         return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
     }
 
     public static TaskStatus valueOf(int code){
