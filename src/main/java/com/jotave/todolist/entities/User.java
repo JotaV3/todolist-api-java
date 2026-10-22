@@ -1,6 +1,7 @@
 package com.jotave.todolist.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -65,7 +66,7 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String getPassword() {
         return password;
     }
