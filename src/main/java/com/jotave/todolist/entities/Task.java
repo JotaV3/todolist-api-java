@@ -1,6 +1,7 @@
 package com.jotave.todolist.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.jotave.todolist.entities.enums.TaskStatus;
 import jakarta.persistence.*;
 
@@ -15,7 +16,7 @@ public class Task implements Serializable {
     private Long id;
     private String title;
     private String description;
-    private Integer taskStatusCode;
+    private int taskStatusCode;
 
     @ManyToOne
     private User user;
@@ -24,11 +25,11 @@ public class Task implements Serializable {
 
     }
 
-    public Task(Long id, String title, String description, TaskStatus taskStatusCode, User user) {
+    public Task(Long id, String title, String description, TaskStatus taskStatus, User user) {
         this.id = id;
         this.title = title;
         this.description = description;
-        setTaskStatusCode(taskStatusCode);
+        if (taskStatus != null) setTaskStatusCode(taskStatus.getCode());
         this.user = user;
     }
 
@@ -56,13 +57,18 @@ public class Task implements Serializable {
         this.description = description;
     }
 
-    public Integer getTaskStatusCode() {
+    public TaskStatus getTaskStatus(){
+        return TaskStatus.valueOf(taskStatusCode);
+    }
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    public int getTaskStatusCode() {
         return taskStatusCode;
     }
 
-    public void setTaskStatusCode(TaskStatus taskStatus) {
-        if(taskStatus != null)
-            this.taskStatusCode = taskStatus.getCode();
+    public void setTaskStatusCode(int taskStatusCode) {
+        TaskStatus.valueOf(taskStatusCode);
+        this.taskStatusCode = taskStatusCode;
     }
 
     public User getUser() {
