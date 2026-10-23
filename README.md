@@ -26,6 +26,8 @@ New features and improvements are being implemented as the project evolves.
 * Retrieve all users.
 * Retrieve a user by ID.
 * Create new users.
+* Update user information.
+* Delete user.
 
 ### Task Management
 
@@ -49,11 +51,15 @@ The API runs locally at `http://localhost:8080` by default.
 
 ### Users
 
-| Method | Endpoint      | Description           |
-| ------ | ------------- | --------------------- |
-| GET    | `/users`      | Retrieve all users    |
-| GET    | `/users/{id}` | Retrieve a user by ID |
-| POST   | `/users`      | Create a new user     |
+| Method | Endpoint      | Description             |
+|--------|---------------|-------------------------|
+| GET    | `/users`      | Retrieve all users      |
+| GET    | `/users/{id}` | Retrieve a user by ID   |
+| POST   | `/users`      | Create a new user       |
+| PUT    | `/users/{id}` | Update an existing user |
+| DELETE | `/users/{id}` | Delete an user          |
+
+
 
 ### Tasks
 
