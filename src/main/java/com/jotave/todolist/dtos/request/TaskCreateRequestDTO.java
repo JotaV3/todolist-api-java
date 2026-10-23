@@ -2,7 +2,7 @@ package com.jotave.todolist.dtos.request;
 
 import jakarta.validation.constraints.*;
 
-public class TaskRequestDTO {
+public class TaskCreateRequestDTO {
     @NotBlank(message = "Title is required.")
     @Size(max = 255, message = "Title must have at most 255 characters.")
     private String title;
@@ -19,7 +19,7 @@ public class TaskRequestDTO {
     @Positive(message = "User ID must be positive.")
     private Long userId;
 
-    public TaskRequestDTO(){
+    public TaskCreateRequestDTO(){
 
     }
 
