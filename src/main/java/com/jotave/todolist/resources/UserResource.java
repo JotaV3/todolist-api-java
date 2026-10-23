@@ -1,5 +1,6 @@
 package com.jotave.todolist.resources;
 
+import com.jotave.todolist.dtos.response.UserResponseDTO;
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,11 @@ public class UserResource {
     private UserService service;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll(){
-        List<User> userList = service.findAll();
+    public ResponseEntity<List<UserResponseDTO>> findAll(){
+        List<UserResponseDTO> userList = service.findAll()
+                .stream()
+                .map(UserResponseDTO::new)
+                .toList();
 
         return ResponseEntity.ok().body(userList);
     }
