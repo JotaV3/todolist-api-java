@@ -38,4 +38,11 @@ public class UserResource {
 
         return ResponseEntity.created(uri).body(user);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user){
+        user = service.update(id, user);
+
+        return ResponseEntity.ok().body(user);
+    }
 }
