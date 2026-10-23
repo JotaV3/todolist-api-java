@@ -2,9 +2,12 @@ package com.jotave.todolist.services;
 
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.repositories.UserRepository;
+import com.jotave.todolist.services.exceptions.DatabaseException;
 import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import org.hibernate.boot.model.relational.Database;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,6 +41,19 @@ public class UserService {
         } catch (EntityNotFoundException e) {
             throw new ResourceNotFoundException(id);
         }
+    }
+
+    public void delete(Long id){
+        if(!repository.existsById(id)){
+            throw new ResourceNotFoundException(id);
+        }
+
+        try {
+            repository.deleteById(id);
+        } catch (DataIntegrityViolationException e) {
+            throw new DatabaseException(e.getMessage());
+        }
+
     }
 
     private void updateUserData(User user, User data){
