@@ -25,8 +25,9 @@ public class TestConfig implements CommandLineRunner {
     public void run(String... args) throws Exception {
         User user1 = new User(null, "João", "joao@gmail.com", "3121041245", "1234");
         User user2 = new User(null, "Felipe", "felipe@gmail.com", "314121315", "5122");
+        User user3 = new User(null, "Alice", "alice@gmail.com", "215489953", "0983");
 
-        userRepository.saveAll(Arrays.asList(user1, user2));
+        userRepository.saveAll(Arrays.asList(user1, user2, user3));
 
         Task task1 = new Task(null, "Arrumar a cama", "tal tal tal", TaskStatus.InProgress, user1);
         Task task2 = new Task(null, "Fazer dever de casa", "tal tal tal", TaskStatus.Completed, user1);
