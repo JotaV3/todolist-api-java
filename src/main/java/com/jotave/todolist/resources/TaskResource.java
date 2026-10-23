@@ -1,5 +1,6 @@
 package com.jotave.todolist.resources;
 
+import com.jotave.todolist.dtos.response.TaskResponseDTO;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,11 @@ public class TaskResource {
     private TaskService service;
 
     @GetMapping
-    public ResponseEntity<List<Task>> findAll(){
-        List<Task> taskList = service.findAll();
+    public ResponseEntity<List<TaskResponseDTO>> findAll(){
+        List<TaskResponseDTO> taskList = service.findAll()
+                .stream()
+                .map(TaskResponseDTO::new)
+                .toList();
 
         return ResponseEntity.ok().body(taskList);
     }
