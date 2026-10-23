@@ -33,13 +33,8 @@ public class TaskService {
         return optionalTask.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public Task insert(Task task){
-        if(task.getUser() == null || task.getUser().getId() == null){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-                    "User ID is required to create a task.");
-        }
-
-        User user = userService.findById(task.getUser().getId());
+    public Task insert(Task task, Long userId){
+        User user = userService.findById(userId);
         task.setUser(user);
 
         return repository.save(task);

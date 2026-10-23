@@ -1,6 +1,6 @@
 package com.jotave.todolist.resources;
 
-import com.jotave.todolist.dtos.request.TaskRequestDTO;
+import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.dtos.response.TaskResponseDTO;
 import com.jotave.todolist.entities.Task;
@@ -38,11 +38,21 @@ public class TaskResource {
     }
 
     @PostMapping
-    public ResponseEntity<Task> insert(@RequestBody Task task){
-        task = service.insert(task);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(task.getId()).toUri();
+    public ResponseEntity<TaskResponseDTO> insert(@Valid @RequestBody TaskCreateRequestDTO dto){
+        Task task = new Task();
+        task.setTitle(dto.getTitle());
+        task.setDescription(dto.getDescription());
+        task.setTaskStatusCode(dto.getTaskStatusCode());
 
-        return ResponseEntity.created(uri).body(task);
+        task = service.insert(task, dto.getUserId());
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(task.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(new TaskResponseDTO(task));
     }
 
     @PutMapping("/{id}")
