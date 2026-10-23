@@ -28,10 +28,10 @@ public class TaskResource {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> findById(@PathVariable Long id){
+    public ResponseEntity<TaskResponseDTO> findById(@PathVariable Long id){
         Task task = service.findById(id);
 
-        return ResponseEntity.ok().body(task);
+        return ResponseEntity.ok().body(new TaskResponseDTO(task));
     }
 
     @PostMapping
