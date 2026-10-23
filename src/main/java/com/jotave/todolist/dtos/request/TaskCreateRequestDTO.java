@@ -10,12 +10,12 @@ public class TaskCreateRequestDTO {
     @Size(max = 255, message = "Description must have at most 255 characters.")
     private String description;
 
-    @NotBlank(message = "Task status is required.")
+    @NotNull(message = "Task status is required.")
     @Min(value = 1, message = "Task status must be between 1 adn 3.")
     @Max(value = 3, message = "Task status must be between 1 and 3.")
     private int taskStatusCode;
 
-    @NotBlank(message = "User ID is required.")
+    @NotNull(message = "User ID is required.")
     @Positive(message = "User ID must be positive.")
     private Long userId;
 
