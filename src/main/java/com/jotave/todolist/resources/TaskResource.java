@@ -1,8 +1,11 @@
 package com.jotave.todolist.resources;
 
+import com.jotave.todolist.dtos.request.TaskRequestDTO;
+import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.dtos.response.TaskResponseDTO;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.services.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +46,15 @@ public class TaskResource {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> update(@PathVariable Long id, @RequestBody Task task){
-        task = service.update(id, task);
+    public ResponseEntity<TaskResponseDTO> update(@PathVariable Long id, @Valid @RequestBody TaskUpdateRequestDTO dto){
+        Task data = new Task();
+        data.setTitle(dto.getTitle());
+        data.setDescription(dto.getDescription());
+        data.setTaskStatusCode(dto.getTaskStatusCode());
 
-        return ResponseEntity.ok().body(task);
+        Task task = service.update(id, data);
+
+        return ResponseEntity.ok().body(new TaskResponseDTO(task));
     }
 
     @DeleteMapping("/{id}")
