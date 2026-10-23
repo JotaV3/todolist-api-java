@@ -1,8 +1,10 @@
 package com.jotave.todolist.resources;
 
+import com.jotave.todolist.dtos.request.UserRequestDTO;
 import com.jotave.todolist.dtos.response.UserResponseDTO;
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.services.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,12 +37,22 @@ public class UserResource {
     }
 
     @PostMapping
-    public ResponseEntity<User> insert(@RequestBody User user){
+    public ResponseEntity<UserResponseDTO> insert(@Valid @RequestBody UserRequestDTO dto){
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        user.setPhone(dto.getPhone());
+        user.setPassword(dto.getPassword());
+
         user = service.insert(user);
 
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(user.getId()).toUri();
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(user.getId())
+                .toUri();
 
-        return ResponseEntity.created(uri).body(user);
+        return ResponseEntity.created(uri).body(new UserResponseDTO(user));
     }
 
     @PutMapping("/{id}")
