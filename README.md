@@ -2,11 +2,11 @@
 
 A RESTful API for managing users and tasks, developed with Java and Spring Boot.
 
-This project is part of my backend development journey, where I'm practicing REST API design, object-oriented programming, database persistence, and software development with the Java ecosystem.
+This project is part of my backend development journey, where I'm applying object-oriented programming, REST API design, database persistence, data validation, and layered architecture.
 
 > **Project Status:** 🚧 Work in Progress
 
-New features and improvements are being implemented as the project evolves.
+The API supports CRUD operations for users and tasks, uses DTOs to manage request and response data, and applies validation rules to incoming requests. I'm continuously improving its architecture and maintainability as I expand my backend development skills.
 
 ## 🚀 Technologies
 
@@ -14,110 +14,43 @@ New features and improvements are being implemented as the project evolves.
 * **Spring Boot** — Application framework
 * **Spring MVC** — REST API development
 * **Spring Data JPA** — Database access and persistence
-* **Hibernate** — ORM and entity management
+* **Hibernate** — Object-relational mapping (ORM)
+* **Jakarta Bean Validation** — Request validation
 * **Maven** — Dependency management and build automation
 * **H2 Database** — In-memory database for development
-* **PostgreSQL** — Database driver available for PostgreSQL integration
+* **PostgreSQL JDBC Driver** — PostgreSQL database connectivity
 
-## ✨ Implemented Features
+## ✨ Features
 
 ### User Management
 
 * Retrieve all users.
 * Retrieve a user by ID.
 * Create new users.
-* Update user information.
-* Delete user.
+* Update existing users.
+* Delete users.
 
 ### Task Management
 
 * Retrieve all tasks.
 * Retrieve a task by ID.
 * Create tasks associated with existing users.
-* Update task information.
+* Update task information while preserving the existing user association.
 * Delete tasks.
+* Manage task statuses using a Java enum.
 
-### Other Implementations
+### Architecture and Data Handling
 
-* Entity relationships between users and tasks.
-* Task status management using Java enums.
-* Custom exceptions for resource-not-found and database-related errors.
 * Layered architecture separating resources, services, repositories, and entities.
-* HTTP response status codes appropriate to common CRUD operations.
+* Request and response DTOs to control the data accepted and returned by the API.
+* Validation of request fields using Jakarta Bean Validation.
+* Custom exceptions for resource-not-found and database-related errors.
+* Appropriate HTTP response codes for common CRUD operations.
+* Automatic generation of resource IDs through JPA identity generation.
 
-## 📌 API Endpoints
+## 🏗️ Project Architecture
 
-The API runs locally at `http://localhost:8080` by default.
-
-### Users
-
-| Method | Endpoint      | Description             |
-|--------|---------------|-------------------------|
-| GET    | `/users`      | Retrieve all users      |
-| GET    | `/users/{id}` | Retrieve a user by ID   |
-| POST   | `/users`      | Create a new user       |
-| PUT    | `/users/{id}` | Update an existing user |
-| DELETE | `/users/{id}` | Delete an user          |
-
-
-
-### Tasks
-
-| Method | Endpoint      | Description             |
-| ------ | ------------- | ----------------------- |
-| GET    | `/tasks`      | Retrieve all tasks      |
-| GET    | `/tasks/{id}` | Retrieve a task by ID   |
-| POST   | `/tasks`      | Create a new task       |
-| PUT    | `/tasks/{id}` | Update an existing task |
-| DELETE | `/tasks/{id}` | Delete a task           |
-
-## 📝 Example Requests
-
-The examples below demonstrate the JSON payloads currently accepted by the API.
-
-### Create a User
-
-**POST** `/users`
-
-```json
-{
-  "name": "John Doe",
-  "email": "john@example.com",
-  "phone": "5551234567",
-  "password": "example-password"
-}
-```
-
-### Create a Task
-
-**POST** `/tasks`
-
-```json
-{
-  "title": "Study Java",
-  "description": "Practice Spring Boot and REST APIs",
-  "taskStatusCode": 2,
-  "user": {
-    "id": 1
-  }
-}
-```
-
-The `user.id` field identifies an existing user to associate with the new task. The API checks whether the specified user exists before saving the task.
-
-### Task Status
-
-Tasks use an enum to represent their current status.
-
-| Code | Status      |
-| ---- | ----------- |
-| `1`  | Completed   |
-| `2`  | In Progress |
-| `3`  | Paused      |
-
-## 🏗️ Project Structure
-
-The application follows a layered structure to separate responsibilities.
+The application follows a layered architecture to separate responsibilities and improve maintainability.
 
 ```text
 src/
@@ -125,6 +58,14 @@ src/
     ├── java/
     │   └── com/jotave/todolist/
     │       ├── config/
+    │       ├── dtos/
+    │       │   ├── request/
+    │       │   │   ├── TaskCreateRequestDTO.java
+    │       │   │   ├── TaskUpdateRequestDTO.java
+    │       │   │   └── UserRequestDTO.java
+    │       │   └── response/
+    │       │       ├── TaskResponseDTO.java
+    │       │       └── UserResponseDTO.java
     │       ├── entities/
     │       │   └── enums/
     │       ├── repositories/
@@ -140,12 +81,144 @@ src/
 ### Layer Responsibilities
 
 * **Resources:** Handle HTTP requests and responses.
-* **Services:** Implement application logic.
-* **Repositories:** Handle database operations through Spring Data JPA.
+* **Services:** Implement business logic and coordinate application operations.
+* **Repositories:** Provide database access through Spring Data JPA.
 * **Entities:** Represent the application's persistent data model.
-* **Enums:** Define task status values.
-* **Exceptions:** Provide custom exception types for error conditions.
+* **Request DTOs:** Define the data accepted by each API operation.
+* **Response DTOs:** Define the data returned to API clients.
+* **Enums:** Represent the available task statuses.
+* **Exceptions:** Provide custom exception types for error handling.
 * **Config:** Configure application components and development data.
+
+## 📌 API Endpoints
+
+The API runs locally at `http://localhost:8080` by default.
+
+### Users
+
+| Method   | Endpoint      | Description             |
+| -------- | ------------- | ----------------------- |
+| `GET`    | `/users`      | Retrieve all users      |
+| `GET`    | `/users/{id}` | Retrieve a user by ID   |
+| `POST`   | `/users`      | Create a new user       |
+| `PUT`    | `/users/{id}` | Update an existing user |
+| `DELETE` | `/users/{id}` | Delete a user           |
+
+### Tasks
+
+| Method   | Endpoint      | Description             |
+| -------- | ------------- | ----------------------- |
+| `GET`    | `/tasks`      | Retrieve all tasks      |
+| `GET`    | `/tasks/{id}` | Retrieve a task by ID   |
+| `POST`   | `/tasks`      | Create a new task       |
+| `PUT`    | `/tasks/{id}` | Update an existing task |
+| `DELETE` | `/tasks/{id}` | Delete a task           |
+
+## 📝 Example Requests
+
+The following examples illustrate the request formats accepted by the current API implementation.
+
+### 1. Create a User
+
+**POST** `/users`
+
+```json
+{
+  "name": "John Doe",
+  "email": "john@example.com",
+  "phone": "5551234567",
+  "password": "example-password"
+}
+```
+
+The user's ID is generated automatically.
+
+The API validates the request fields, including the name, email, phone number, and password length.
+
+### 2. Create a Task
+
+**POST** `/tasks`
+
+```json
+{
+  "title": "Study Java",
+  "description": "Practice Spring Boot and REST APIs",
+  "taskStatusCode": 2,
+  "userId": 1
+}
+```
+
+The `userId` field identifies an existing user to associate with the task.
+
+The application retrieves the specified user and establishes the relationship before saving the task.
+
+If the specified user does not exist, the operation cannot be completed successfully.
+
+### 3. Update a Task
+
+**PUT** `/tasks/1`
+
+```json
+{
+  "title": "Study Spring Boot",
+  "description": "Practice building REST APIs",
+  "taskStatusCode": 2
+}
+```
+
+The task ID is provided through the URL.
+
+The request uses `TaskUpdateRequestDTO`, which does not include `userId`. Updating a task therefore modifies its title, description, and status while preserving its existing user association.
+
+### 4. Retrieve a Task
+
+**GET** `/tasks/1`
+
+Example response:
+
+```json
+{
+  "id": 1,
+  "title": "Study Spring Boot",
+  "description": "Practice building REST APIs",
+  "taskStatus": "InProgress",
+  "user": {
+    "id": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "5551234567"
+  }
+}
+```
+
+The response uses `TaskResponseDTO` and includes information about the associated user without exposing the user's password.
+
+### 5. Task Status
+
+Tasks use a Java enum called `TaskStatus`.
+
+| Code | Status     |
+| ---- | ---------- |
+| `1`  | Completed  |
+| `2`  | InProgress |
+| `3`  | Paused     |
+
+Task creation and update requests use the numeric `taskStatusCode`. Task responses expose the corresponding status name through the `taskStatus` field.
+
+## ✅ Request Validation
+
+The API uses Jakarta Bean Validation to define rules for incoming request data.
+
+Examples of the implemented validation constraints include:
+
+* `@NotBlank` — Rejects missing or blank text fields.
+* `@Email` — Checks the email format.
+* `@Size` — Defines minimum or maximum field lengths.
+* `@Min` and `@Max` — Restrict numeric values, including task status codes.
+* `@Positive` — Requires a positive user ID.
+* `@Valid` — Triggers validation of request DTOs in the controllers.
+
+For example, a request containing a blank task title or an invalid email format should be rejected when it violates the corresponding validation rules.
 
 ## ⚙️ Running the Project
 
@@ -180,52 +253,63 @@ On Linux or macOS:
 ./mvnw spring-boot:run
 ```
 
-Once the application starts, the API is available at:
+Once the application starts, the API will be available at:
 
 `http://localhost:8080`
 
-### Database Configuration
+You can test the endpoints using Postman, Insomnia, or another HTTP client.
 
-The current default configuration uses an in-memory H2 database.
+## 🗄️ Database Configuration
 
-The application also includes sample users and tasks that are loaded when running with the `test` profile.
-
-Because the database is in memory, the data is not preserved when the application stops.
-
-The H2 Console is available at:
-
-`http://localhost:8080/h2-console`
+The current development configuration uses an in-memory H2 database and activates the `test` Spring profile.
 
 The default JDBC URL is:
 
 `jdbc:h2:mem:test`
 
+The H2 Console is available at:
+
+`http://localhost:8080/h2-console`
+
+Use the following connection settings:
+
+| Setting  | Value              |
+| -------- | ------------------ |
+| JDBC URL | `jdbc:h2:mem:test` |
+| Username | `sa`               |
+| Password | Leave empty        |
+
+Because the database is in memory, its data is not preserved when the application stops.
+
+The project also includes the PostgreSQL JDBC driver for PostgreSQL connectivity. The default configuration currently uses H2.
+
 ## 🔧 Planned Improvements
 
 The project is still under development. Future improvements may include:
 
-* Implementing dedicated request and response DTOs.
-* Adding comprehensive request validation.
-* Improving exception handling and API error responses.
-* Implementing password hashing and authentication.
-* Expanding automated test coverage.
-* Improving database configuration for PostgreSQL.
-* Expanding user management functionality.
+* Centralized exception handling and standardized API error responses.
+* Secure password hashing and authentication.
+* Expanded automated test coverage.
+* Improved database configuration for different environments.
+* Additional validation and refinement of business rules.
+* Further improvements to code organization and maintainability.
 
-## 🎯 Project Goals
+## 🎯 Learning Goals
 
-The main goal of this project is to strengthen my backend development skills by building a REST API with Java and Spring Boot.
+This project helps me strengthen my backend development skills through practical implementation.
 
-Throughout its development, I'm focusing on:
+Key areas of learning include:
 
-* RESTful API design.
-* Object-oriented programming.
-* Entity relationships and database persistence.
-* Separation of responsibilities through a layered architecture.
-* Exception handling.
-* Clean and maintainable code.
+* RESTful API design and HTTP methods.
+* Object-oriented programming with Java.
+* Database relationships and persistence with JPA.
+* Separation of responsibilities through layered architecture.
+* Request and response DTOs.
+* Input validation and exception handling.
+* Data mapping between DTOs and entities.
+* Writing maintainable and well-organized code.
 
-This repository will continue to evolve as I implement new features and improve the application.
+The project will continue to evolve as I implement new features and improve the existing architecture.
 
 ---
 
