@@ -20,7 +20,7 @@ public class UserResourceTest {
     private MockMvc mockMvc;
 
     @Test
-    public void UserResource_findAll_shouldReturnAllUsers() throws Exception{
+    public void shouldReturnAllUsers() throws Exception{
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
