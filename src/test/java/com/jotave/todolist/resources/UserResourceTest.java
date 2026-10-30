@@ -1,5 +1,7 @@
 package com.jotave.todolist.resources;
 
+import com.jotave.todolist.entities.User;
+import com.jotave.todolist.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -23,11 +25,28 @@ public class UserResourceTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private UserRepository repository;
+
     @Test
     public void shouldReturnAllUsers() throws Exception{
         mockMvc.perform(get("/users"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    @Test
+    public void shouldReturnUser() throws Exception {
+        User user = createUser();
+
+        ResultActions result = mockMvc.perform(get("/users/" + user.getId()));
+
+        result
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(user.getId()))
+                .andExpect(jsonPath("$.name").value(user.getName()))
+                .andExpect(jsonPath("$.email").value(user.getEmail()))
+                .andExpect(jsonPath("$.phone").value(user.getPhone()));
     }
 
     @Test
@@ -54,5 +73,11 @@ public class UserResourceTest {
                 .andExpect(jsonPath("$.name").value("João"))
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.password").doesNotExist());
+   }
+
+   private User createUser(){
+        User user = new User(null, "João", "joao@gmail.com", "41241", "512512");
+
+        return repository.save(user);
    }
 }
