@@ -10,6 +10,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 
 @Configuration
@@ -29,9 +30,29 @@ public class TestConfig implements CommandLineRunner {
 
         userRepository.saveAll(Arrays.asList(user1, user2, user3));
 
-        Task task1 = new Task(null, "Arrumar a cama", "tal tal tal", TaskStatus.InProgress, user1);
-        Task task2 = new Task(null, "Fazer dever de casa", "tal tal tal", TaskStatus.Completed, user1);
-        Task task3 = new Task(null, "Lavar a louça", "tal tal tal", TaskStatus.Paused, user2);
+        Task task1 = new Task(
+                null,
+                "Arrumar a cama",
+                "tal tal tal",
+                LocalDate.of(2026,11,17),
+                TaskStatus.InProgress,
+                user1
+        );
+        Task task2 = new Task(
+                null,
+                "Fazer dever de casa",
+                "tal tal tal",
+                LocalDate.of(2026,5,16),
+                TaskStatus.Completed,
+                user1
+        );
+        Task task3 = new Task(
+                null,
+                "Lavar a louça", "tal tal tal",
+                LocalDate.of(2027,1,12),
+                TaskStatus.Paused,
+                user2
+        );
 
         taskRepository.saveAll(Arrays.asList(task1, task2, task3));
     }

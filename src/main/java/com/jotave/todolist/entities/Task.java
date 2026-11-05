@@ -6,6 +6,7 @@ import com.jotave.todolist.entities.enums.TaskStatus;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
@@ -16,6 +17,7 @@ public class Task implements Serializable {
     private Long id;
     private String title;
     private String description;
+    private LocalDate dueDate;
     private int taskStatusCode;
 
     @ManyToOne
@@ -25,10 +27,11 @@ public class Task implements Serializable {
 
     }
 
-    public Task(Long id, String title, String description, TaskStatus taskStatus, User user) {
+    public Task(Long id, String title, String description, LocalDate dueDate, TaskStatus taskStatus, User user) {
         this.id = id;
         this.title = title;
         this.description = description;
+        this.dueDate = dueDate;
         if (taskStatus != null) setTaskStatusCode(taskStatus.getCode());
         this.user = user;
     }
@@ -55,6 +58,14 @@ public class Task implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public TaskStatus getTaskStatus(){

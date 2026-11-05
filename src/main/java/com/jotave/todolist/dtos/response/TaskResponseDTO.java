@@ -3,10 +3,13 @@ package com.jotave.todolist.dtos.response;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.entities.enums.TaskStatus;
 
+import java.time.LocalDate;
+
 public class TaskResponseDTO {
     private Long id;
     private String title;
     private String description;
+    private LocalDate dueDate;
     private TaskStatus taskStatus;
     private UserResponseDTO user;
 
@@ -14,6 +17,7 @@ public class TaskResponseDTO {
         this.id = task.getId();
         this.title = task.getTitle();
         this.description = task.getDescription();
+        this.dueDate = task.getDueDate();
         this.taskStatus = task.getTaskStatus();
 
         if(task.getUser() != null)
@@ -30,6 +34,10 @@ public class TaskResponseDTO {
 
     public String getDescription() {
         return description;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     public TaskStatus getTaskStatus() {

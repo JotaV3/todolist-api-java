@@ -2,6 +2,8 @@ package com.jotave.todolist.dtos.request;
 
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
+
 public class TaskCreateRequestDTO {
     @NotBlank(message = "Title is required.")
     @Size(max = 255, message = "Title must have at most 255 characters.")
@@ -9,6 +11,9 @@ public class TaskCreateRequestDTO {
 
     @Size(max = 255, message = "Description must have at most 255 characters.")
     private String description;
+
+    @NotNull(message = "Due date is required.")
+    private LocalDate dueDate;
 
     @NotNull(message = "Task status is required.")
     @Min(value = 1, message = "Task status must be between 1 adn 3.")
@@ -37,6 +42,14 @@ public class TaskCreateRequestDTO {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public int getTaskStatusCode() {
