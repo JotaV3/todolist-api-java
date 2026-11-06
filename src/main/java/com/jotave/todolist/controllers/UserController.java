@@ -1,4 +1,4 @@
-package com.jotave.todolist.resources;
+package com.jotave.todolist.controllers;
 
 import com.jotave.todolist.dtos.request.UserRequestDTO;
 import com.jotave.todolist.dtos.response.UserResponseDTO;
@@ -15,7 +15,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class UserResource {
+public class UserController {
     @Autowired
     private UserService service;
 

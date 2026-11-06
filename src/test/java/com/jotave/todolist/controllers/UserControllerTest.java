@@ -1,4 +1,4 @@
-package com.jotave.todolist.resources;
+package com.jotave.todolist.controllers;
 
 import com.jotave.todolist.entities.User;
 import com.jotave.todolist.repositories.UserRepository;
@@ -20,7 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class UserResourceTest {
+public class UserControllerTest {
 
     @Autowired
     private MockMvc mockMvc;

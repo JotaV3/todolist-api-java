@@ -1,4 +1,4 @@
-package com.jotave.todolist.resources;
+package com.jotave.todolist.controllers;
 
 import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskResource {
+public class TaskController {
     @Autowired
     private TaskService service;
 
