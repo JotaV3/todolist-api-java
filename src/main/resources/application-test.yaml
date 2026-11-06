@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: JDBC:h2:mem:todolist-test
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
