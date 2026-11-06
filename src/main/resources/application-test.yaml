@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: JDBC:h2:mem:todolist-test
+    url: jdbc:h2:mem:todolist-test
     driver-class-name: org.h2.Driver
     username: sa
     password:
