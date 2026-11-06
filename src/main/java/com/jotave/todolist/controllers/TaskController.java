@@ -43,6 +43,7 @@ public class TaskController {
         task.setTitle(dto.getTitle());
         task.setDescription(dto.getDescription());
         task.setTaskStatusCode(dto.getTaskStatusCode());
+        task.setDueDate(dto.getDueDate());
 
         task = service.insert(task, dto.getUserId());
 
