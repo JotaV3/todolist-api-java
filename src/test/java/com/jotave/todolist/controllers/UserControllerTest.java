@@ -13,8 +13,9 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.UUID;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -73,9 +74,19 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.name").value("João"))
                 .andExpect(jsonPath("$.email").value(email))
                 .andExpect(jsonPath("$.password").doesNotExist());
-   }
+    }
 
-   private User createUser(){
+    @Test
+    public void shouldDeleteUser() throws Exception{
+        User user = createUser();
+
+        mockMvc.perform(delete("/users/" + user.getId()))
+                .andExpect(status().isNoContent());
+
+        assertFalse(repository.existsById(user.getId()));
+    }
+
+    private User createUser(){
         User user = new User(null, "João", "joao@gmail.com", "41241", "512512");
 
         return repository.save(user);
