@@ -23,7 +23,7 @@ public class Task implements Serializable {
     private String title;
     private String description;
     private LocalDate dueDate;
-    private int taskStatusCode;
+    private Integer taskStatusCode;
 
     @ManyToOne
     private User user;
@@ -46,11 +46,11 @@ public class Task implements Serializable {
     }
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    public int getTaskStatusCode() {
+    public Integer getTaskStatusCode() {
         return taskStatusCode;
     }
 
-    public void setTaskStatusCode(int taskStatusCode) {
+    public void setTaskStatusCode(Integer taskStatusCode) {
         TaskStatus.valueOf(taskStatusCode);
         this.taskStatusCode = taskStatusCode;
     }

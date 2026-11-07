@@ -18,7 +18,7 @@ public record TaskCreateRequestDTO(
     @NotNull(message = "Task status is required.")
     @Min(value = 1, message = "Task status must be between 1 adn 3.")
     @Max(value = 3, message = "Task status must be between 1 and 3.")
-    int taskStatusCode,
+    Integer taskStatusCode,
 
     @NotNull(message = "User ID is required.")
     @Positive(message = "User ID must be positive.")
