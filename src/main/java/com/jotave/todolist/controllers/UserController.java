@@ -3,6 +3,7 @@ package com.jotave.todolist.controllers;
 import com.jotave.todolist.dtos.request.UserRequestDTO;
 import com.jotave.todolist.dtos.response.UserResponseDTO;
 import com.jotave.todolist.entities.User;
+import com.jotave.todolist.mappers.UserMapper;
 import com.jotave.todolist.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,18 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+
     @Autowired
     private UserService service;
+
+    @Autowired
+    private UserMapper mapper;
 
     @GetMapping
     public ResponseEntity<List<UserResponseDTO>> findAll(){
         List<UserResponseDTO> userList = service.findAll()
                 .stream()
-                .map(UserResponseDTO::new)
+                .map(user -> mapper.toUserResponseDTO(user))
                 .toList();
 
         return ResponseEntity.ok().body(userList);
@@ -33,18 +38,12 @@ public class UserController {
     public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id){
         User user = service.findById(id);
 
-        return ResponseEntity.ok().body(new UserResponseDTO(user));
+        return ResponseEntity.ok().body(mapper.toUserResponseDTO(user));
     }
 
     @PostMapping
     public ResponseEntity<UserResponseDTO> insert(@Valid @RequestBody UserRequestDTO dto){
-        User user = new User();
-        user.setName(dto.getName());
-        user.setEmail(dto.getEmail());
-        user.setPhone(dto.getPhone());
-        user.setPassword(dto.getPassword());
-
-        user = service.insert(user);
+        User user = service.insert(dto);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -52,20 +51,14 @@ public class UserController {
                 .buildAndExpand(user.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(new UserResponseDTO(user));
+        return ResponseEntity.created(uri).body(mapper.toUserResponseDTO(user));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserRequestDTO dto){
-        User data = new User();
-        data.setName(dto.getName());
-        data.setEmail(dto.getEmail());
-        data.setPassword(dto.getPassword());
-        data.setPhone(dto.getPhone());
+        User user = service.update(id, dto);
 
-        User user = service.update(id, data);
-
-        return ResponseEntity.ok().body(new UserResponseDTO(user));
+        return ResponseEntity.ok().body(mapper.toUserResponseDTO(user));
     }
 
     @DeleteMapping("/{id}")

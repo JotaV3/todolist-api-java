@@ -1,6 +1,8 @@
 package com.jotave.todolist.services;
 
+import com.jotave.todolist.dtos.request.UserRequestDTO;
 import com.jotave.todolist.entities.User;
+import com.jotave.todolist.mappers.UserMapper;
 import com.jotave.todolist.repositories.UserRepository;
 import com.jotave.todolist.services.exceptions.DatabaseException;
 import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
@@ -15,8 +17,12 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
     @Autowired
     private UserRepository repository;
+
+    @Autowired
+    private UserMapper mapper;
 
     public List<User> findAll(){
         return repository.findAll();
@@ -28,14 +34,16 @@ public class UserService {
         return optionalUser.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public User insert(User user){
+    public User insert(UserRequestDTO dto){
+        User user = mapper.toEntity(dto);
+
         return repository.save(user);
     }
 
-    public User update(Long id, User data){
+    public User update(Long id, UserRequestDTO dto){
         try{
             User user = repository.getReferenceById(id);
-            updateUserData(user, data);
+            mapper.update(user, dto);
 
             return repository.save(user);
         } catch (EntityNotFoundException e) {
@@ -54,12 +62,5 @@ public class UserService {
             throw new DatabaseException(e.getMessage());
         }
 
-    }
-
-    private void updateUserData(User user, User data){
-        user.setName(data.getName());
-        user.setEmail(data.getEmail());
-        user.setPassword(data.getPassword());
-        user.setPhone(data.getPhone());
     }
 }
