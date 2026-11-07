@@ -1,7 +1,10 @@
 package com.jotave.todolist.services;
 
+import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
+import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.entities.User;
+import com.jotave.todolist.mappers.TaskMapper;
 import com.jotave.todolist.repositories.TaskRepository;
 import com.jotave.todolist.services.exceptions.DatabaseException;
 import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
@@ -17,8 +20,12 @@ import java.util.Optional;
 
 @Service
 public class TaskService {
+
     @Autowired
     private TaskRepository repository;
+
+    @Autowired
+    private TaskMapper mapper;
 
     @Autowired
     private UserService userService;
@@ -33,17 +40,18 @@ public class TaskService {
         return optionalTask.orElseThrow(() -> new ResourceNotFoundException(id));
     }
 
-    public Task insert(Task task, Long userId){
+    public Task insert(TaskCreateRequestDTO dto, Long userId){
+        // return user if exist
         User user = userService.findById(userId);
-        task.setUser(user);
+        Task task = mapper.toEntity(dto, user);
 
         return repository.save(task);
     }
 
-    public Task update(Long id, Task data){
+    public Task update(Long id, TaskUpdateRequestDTO dto){
         try{
             Task task = repository.getReferenceById(id);
-            updateTaskData(task, data);
+            mapper.update(task, dto);
 
             return repository.save(task);
         }
@@ -62,11 +70,5 @@ public class TaskService {
         }catch (DataIntegrityViolationException e){
             throw new DatabaseException(e.getMessage());
         }
-    }
-
-    private void updateTaskData(Task task, Task data){
-        task.setTitle(data.getTitle());
-        task.setDescription(data.getDescription());
-        task.setTaskStatusCode(data.getTaskStatusCode());
     }
 }

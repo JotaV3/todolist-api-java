@@ -4,6 +4,7 @@ import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.dtos.response.TaskResponseDTO;
 import com.jotave.todolist.entities.Task;
+import com.jotave.todolist.mappers.TaskMapper;
 import com.jotave.todolist.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,35 +18,33 @@ import java.util.List;
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
+
     @Autowired
     private TaskService service;
 
+    @Autowired
+    private TaskMapper mapper;
+
     @GetMapping
     public ResponseEntity<List<TaskResponseDTO>> findAll(){
-        List<TaskResponseDTO> taskList = service.findAll()
+        List<TaskResponseDTO> dto = service.findAll()
                 .stream()
-                .map(TaskResponseDTO::new)
+                .map(task -> mapper.toTaskResponseDTO(task))
                 .toList();
 
-        return ResponseEntity.ok().body(taskList);
+        return ResponseEntity.ok().body(dto);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> findById(@PathVariable Long id){
         Task task = service.findById(id);
 
-        return ResponseEntity.ok().body(new TaskResponseDTO(task));
+        return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
     }
 
     @PostMapping
     public ResponseEntity<TaskResponseDTO> insert(@Valid @RequestBody TaskCreateRequestDTO dto){
-        Task task = new Task();
-        task.setTitle(dto.getTitle());
-        task.setDescription(dto.getDescription());
-        task.setTaskStatusCode(dto.getTaskStatusCode());
-        task.setDueDate(dto.getDueDate());
-
-        task = service.insert(task, dto.getUserId());
+        Task task = service.insert(dto, dto.userId());
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
@@ -53,19 +52,14 @@ public class TaskController {
                 .buildAndExpand(task.getId())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(new TaskResponseDTO(task));
+        return ResponseEntity.created(uri).body(mapper.toTaskResponseDTO(task));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDTO> update(@PathVariable Long id, @Valid @RequestBody TaskUpdateRequestDTO dto){
-        Task data = new Task();
-        data.setTitle(dto.getTitle());
-        data.setDescription(dto.getDescription());
-        data.setTaskStatusCode(dto.getTaskStatusCode());
+        Task task = service.update(id, dto);
 
-        Task task = service.update(id, data);
-
-        return ResponseEntity.ok().body(new TaskResponseDTO(task));
+        return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
     }
 
     @DeleteMapping("/{id}")
