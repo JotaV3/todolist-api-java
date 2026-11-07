@@ -1,5 +1,6 @@
 package com.jotave.todolist.services.handlers;
 
+import com.jotave.todolist.services.exceptions.DatabaseException;
 import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,22 @@ public class ServiceExceptionHandler {
                 status.value(),
                 e.getMessage(),
                 request.getRequestURI()
+        );
+
+        return ResponseEntity.status(status).body(standardError);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<StandardError> handleDatabaseException(
+            DatabaseException e,
+            HttpServletRequest request
+    ){
+        HttpStatus status = HttpStatus.CONFLICT;
+
+        StandardError standardError = new StandardError(
+            status.value(),
+            e.getMessage(),
+            request.getRequestURI()
         );
 
         return ResponseEntity.status(status).body(standardError);
