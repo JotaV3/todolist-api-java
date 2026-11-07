@@ -4,67 +4,23 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-public class TaskCreateRequestDTO {
+public record TaskCreateRequestDTO(
     @NotBlank(message = "Title is required.")
     @Size(max = 255, message = "Title must have at most 255 characters.")
-    private String title;
+    String title,
 
     @Size(max = 255, message = "Description must have at most 255 characters.")
-    private String description;
+    String description,
 
     @NotNull(message = "Due date is required.")
-    private LocalDate dueDate;
+    LocalDate dueDate,
 
     @NotNull(message = "Task status is required.")
     @Min(value = 1, message = "Task status must be between 1 adn 3.")
     @Max(value = 3, message = "Task status must be between 1 and 3.")
-    private int taskStatusCode;
+    int taskStatusCode,
 
     @NotNull(message = "User ID is required.")
     @Positive(message = "User ID must be positive.")
-    private Long userId;
-
-    public TaskCreateRequestDTO(){
-
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public int getTaskStatusCode() {
-        return taskStatusCode;
-    }
-
-    public void setTaskStatusCode(int taskStatusCode) {
-        this.taskStatusCode = taskStatusCode;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-}
+    Long userId
+){}
