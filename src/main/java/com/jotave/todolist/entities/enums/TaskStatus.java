@@ -1,5 +1,8 @@
 package com.jotave.todolist.entities.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TaskStatus {
     Completed(1),
     InProgress(2),
@@ -9,10 +12,6 @@ public enum TaskStatus {
 
     private TaskStatus(int code){
         this.code = code;
-    }
-
-    public int getCode() {
-        return code;
     }
 
     public static TaskStatus valueOf(int code){
