@@ -56,8 +56,8 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.id").value(task.getId()))
                 .andExpect(jsonPath("$.title").value(task.getTitle()))
                 .andExpect(jsonPath("$.description").value(task.getDescription()))
-                .andExpect(jsonPath("$.dueDate").value(task.getDueDate()))
-                .andExpect(jsonPath("$.taskStatus").value(task.getTaskStatus()))
+                .andExpect(jsonPath("$.dueDate").value(task.getDueDate().toString()))
+                .andExpect(jsonPath("$.taskStatus").value(task.getTaskStatus().toString()))
                 .andExpect(jsonPath("$.user").value(task.getUser()));
     }
 
