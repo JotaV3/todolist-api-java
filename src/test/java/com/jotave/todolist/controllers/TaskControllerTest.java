@@ -35,9 +35,14 @@ public class TaskControllerTest {
 
     @Test
     public void shouldReturnAllTasks() throws Exception{
+        Task task = createTask();
+
         mockMvc.perform(get("/tasks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray());
+                .andExpect(jsonPath("$").isArray())
+                .andExpect(jsonPath("$[?(@.id == %d)]"
+                        .formatted(task.getId()))
+                        .isNotEmpty());
     }
 
     private Task createTask(){
