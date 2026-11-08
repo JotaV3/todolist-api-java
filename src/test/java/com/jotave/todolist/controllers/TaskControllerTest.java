@@ -20,10 +20,8 @@ import tools.jackson.databind.ObjectMapper;
 import java.time.LocalDate;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -47,11 +45,17 @@ public class TaskControllerTest {
     public void shouldReturnAllTasks() throws Exception{
         Task task = createTask();
 
-        mockMvc.perform(get("/tasks"))
+        ResultActions result = mockMvc.perform(get("/tasks"));
+
+        // Result based on TaskResponseDTO
+        result
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[?(@.id == %d)]"
                         .formatted(task.getId()))
+                        .isNotEmpty())
+                .andExpect(jsonPath("$[?(@.user.id == %d)]"
+                        .formatted(task.getUser().getId()))
                         .isNotEmpty());
     }
 
@@ -61,13 +65,18 @@ public class TaskControllerTest {
 
         ResultActions result = mockMvc.perform(get("/tasks/" + task.getId()));
 
+        // Result based on TaskResponseDTO
         result
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(task.getId()))
                 .andExpect(jsonPath("$.title").value(task.getTitle()))
                 .andExpect(jsonPath("$.description").value(task.getDescription()))
                 .andExpect(jsonPath("$.dueDate").value(task.getDueDate().toString()))
                 .andExpect(jsonPath("$.taskStatus").value(task.getTaskStatus().toString()))
-                .andExpect(jsonPath("$.user").value(task.getUser()));
+                .andExpect(jsonPath("$.user.id").value(task.getUser().getId()))
+                .andExpect(jsonPath("$.user.name").value(task.getUser().getName()))
+                .andExpect(jsonPath("$.user.email").value(task.getUser().getEmail()))
+                .andExpect(jsonPath("$.user.phone").value(task.getUser().getPhone()));
     }
 
     @Test
@@ -88,10 +97,12 @@ public class TaskControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
 
+        // Result based on TaskResponseDTO
         result
                 .andExpect(status().isCreated())
                 .andExpect((header().exists("Location")))
                 .andExpect(jsonPath("$.id").exists())
+                .andExpect(jsonPath("$.title").value("Study Spring Boot"))
                 .andExpect(jsonPath("$.description").value("Build a To-do List API REST"))
                 .andExpect(jsonPath("$.dueDate").value("2026-11-10"))
                 .andExpect(jsonPath("$.taskStatus").value(TaskStatus.valueOf(2).toString()))
@@ -105,12 +116,25 @@ public class TaskControllerTest {
                 TaskResponseDTO.class
         );
 
-        Task savedTask = repository.findById(responseDTO.id())
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found. Id: " + responseDTO.id()));
-
         assertNotNull(responseDTO.id());
+
+        Task savedTask = repository.findById(responseDTO.id()).orElseThrow();
+
         assertEquals("Study Spring Boot", savedTask.getTitle());
         assertEquals(user.getId(), savedTask.getUser().getId());
+    }
+
+    @Test
+    public void shouldDeleteTask() throws Exception{
+        Task task = createTask();
+
+        ResultActions result = mockMvc.perform(delete("/tasks/" + task.getId()));
+
+        // Result based on TaskResponseDTO
+        result
+                .andExpect(status().isNoContent());
+
+        assertFalse(repository.existsById(task.getId()));
     }
 
     private Task createTask(){
