@@ -9,7 +9,7 @@ public class TaskValidator {
     @Autowired
     private TaskRepository repository;
 
-    public ValidatorResult validateTaskRequest(TaskCreateRequestDTO dto){
+    public ValidatorResult validateTaskCreateRequestDTO(TaskCreateRequestDTO dto){
         var result = ValidatorResult.newValidationResult();
 
         boolean isListNotEmpty = repository.findTaskByTitleAndUserId(dto.title(), dto.userId()).isPresent();
