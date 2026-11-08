@@ -46,6 +46,7 @@ public class TaskControllerTest {
                         .isNotEmpty());
     }
 
+    @Test
     public void shouldReturnTask() throws Exception{
         Task task = createTask();
 
