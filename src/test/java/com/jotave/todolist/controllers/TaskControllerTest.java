@@ -1,11 +1,19 @@
 package com.jotave.todolist.controllers;
 
+import com.jotave.todolist.entities.Task;
+import com.jotave.todolist.entities.User;
+import com.jotave.todolist.entities.enums.TaskStatus;
+import com.jotave.todolist.repositories.TaskRepository;
+import com.jotave.todolist.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,10 +27,38 @@ public class TaskControllerTest {
     @Autowired
     MockMvc mockMvc;
 
+    @Autowired
+    TaskRepository repository;
+
+    @Autowired
+    UserRepository userRepository;
+
     @Test
     public void shouldReturnAllTasks() throws Exception{
         mockMvc.perform(get("/tasks"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
+    }
+
+    private Task createTask(){
+        User user = new User(
+                null,
+                "João",
+                "joao" + UUID.randomUUID() + "@gmail.com",
+                "41241",
+                "12345678"
+        );
+        user = userRepository.save(user);
+
+        Task task = new Task(
+                null,
+                "Study Spring Boot",
+                "Build a To-do List API REST",
+                LocalDate.of(2026, 11, 10),
+                TaskStatus.InProgress,
+                user
+        );
+
+        return repository.save(task);
     }
 }
