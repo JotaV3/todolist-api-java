@@ -93,6 +93,7 @@ public class UserControllerTest {
         User user = repository.findById(responseDTO.id())
                 .orElseThrow(() -> new ResourceNotFoundException("Resource not found. Id: " + responseDTO.id()));
 
+        assertNotNull(responseDTO.id());
         assertEquals(email, user.getEmail());
     }
 
