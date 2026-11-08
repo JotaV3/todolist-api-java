@@ -8,6 +8,8 @@ import com.jotave.todolist.mappers.TaskMapper;
 import com.jotave.todolist.repositories.TaskRepository;
 import com.jotave.todolist.services.exceptions.DatabaseException;
 import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
+import com.jotave.todolist.services.exceptions.ValidationException;
+import com.jotave.todolist.services.validations.TaskValidator;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -28,6 +30,9 @@ public class TaskService {
     private TaskMapper mapper;
 
     @Autowired
+    private TaskValidator validator;
+
+    @Autowired
     private UserService userService;
 
     public List<Task> findAll(){
@@ -41,6 +46,12 @@ public class TaskService {
     }
 
     public Task insert(TaskCreateRequestDTO dto, Long userId){
+        var result = validator.validateTaskCreateRequestDTO(dto);
+
+        if(result.isInvalid()){
+            throw new ValidationException(result.getInvalidFieldList());
+        }
+
         // return user if exist
         User user = userService.findById(userId);
         Task task = mapper.toEntity(dto, user);
@@ -49,15 +60,18 @@ public class TaskService {
     }
 
     public Task update(Long id, TaskUpdateRequestDTO dto){
-        try{
-            Task task = repository.getReferenceById(id);
-            mapper.update(task, dto);
+        Task task = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(id));
 
-            return repository.save(task);
+        var result = validator.validateTaskUpdateRequestDTO(id, dto, task.getUser().getId());
+
+        if(result.isInvalid()){
+            throw new ValidationException(result.getInvalidFieldList());
         }
-        catch(EntityNotFoundException e){
-            throw new ResourceNotFoundException(id);
-        }
+
+        mapper.update(task, dto);
+
+        return repository.save(task);
     }
 
     public void delete(Long id){
