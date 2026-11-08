@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@Component
 public class ValidatorResult {
     private final List<InvalidField> invalidFieldList;
 
