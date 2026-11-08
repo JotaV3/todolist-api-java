@@ -38,7 +38,10 @@ public class UserControllerTest {
     public void shouldReturnAllUsers() throws Exception{
         User user = createUser();
 
-        mockMvc.perform(get("/users"))
+        ResultActions result = mockMvc.perform(get("/users"));
+
+        // Result based on UserResponseDTO
+        result
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$[?(@.id == %d)]"
@@ -52,6 +55,7 @@ public class UserControllerTest {
 
         ResultActions result = mockMvc.perform(get("/users/" + user.getId()));
 
+        // Result based on UserResponseDTO
         result
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(user.getId()))
@@ -77,6 +81,7 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
 
+        // Result based on UserResponseDTO
         result
                 .andExpect(status().isCreated())
                 .andExpect((header().exists("Location")))
@@ -90,10 +95,11 @@ public class UserControllerTest {
                 UserResponseDTO.class
         );
 
-        User user = repository.findById(responseDTO.id())
-                .orElseThrow(() -> new ResourceNotFoundException("Resource not found. Id: " + responseDTO.id()));
-
         assertNotNull(responseDTO.id());
+
+        User user = repository.findById(responseDTO.id())
+                .orElseThrow();
+
         assertEquals(email, user.getEmail());
     }
 
