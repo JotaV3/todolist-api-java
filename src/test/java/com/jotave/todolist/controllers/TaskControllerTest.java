@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDate;
 import java.util.UUID;
@@ -43,6 +44,20 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$[?(@.id == %d)]"
                         .formatted(task.getId()))
                         .isNotEmpty());
+    }
+
+    public void shouldReturnTask() throws Exception{
+        Task task = createTask();
+
+        ResultActions result = mockMvc.perform(get("/tasks/" + task.getId()));
+
+        result
+                .andExpect(jsonPath("$.id").value(task.getId()))
+                .andExpect(jsonPath("$.title").value(task.getTitle()))
+                .andExpect(jsonPath("$.description").value(task.getDescription()))
+                .andExpect(jsonPath("$.dueDate").value(task.getDueDate()))
+                .andExpect(jsonPath("$.taskStatus").value(task.getTaskStatus()))
+                .andExpect(jsonPath("$.user").value(task.getUser()));
     }
 
     private Task createTask(){
