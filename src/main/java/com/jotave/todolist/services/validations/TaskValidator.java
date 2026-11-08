@@ -4,7 +4,9 @@ import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.repositories.TaskRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaskValidator {
 
     @Autowired
