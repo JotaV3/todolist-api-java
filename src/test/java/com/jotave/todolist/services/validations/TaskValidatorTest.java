@@ -12,8 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +27,7 @@ public class TaskValidatorTest {
     @Test
     public void shouldRejectTitleAlreadyUsedByAnotherTask(){
         var dto = new TaskUpdateRequestDTO(
-            "Study Spring Boot",
+                "Study Spring Boot",
                 "",
                 LocalDate.of(2026, 11, 10),
                 2
@@ -44,5 +43,25 @@ public class TaskValidatorTest {
 
         assertTrue(result.isInvalid());
         assertEquals("title", result.getInvalidFieldList().getFirst().name());
+    }
+
+    @Test
+    public void shouldNotRejectOwnTitleDuringUpdate(){
+        var dto = new TaskUpdateRequestDTO(
+                "Study Spring Boot",
+                "",
+                LocalDate.of(2026, 11, 10),
+                2
+        );
+
+        Task ownTask = new Task();
+        ownTask.setId(1L);
+
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 5L))
+                .thenReturn(Optional.of(ownTask));
+
+        var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
+
+        assertFalse(result.isInvalid());
     }
 }
