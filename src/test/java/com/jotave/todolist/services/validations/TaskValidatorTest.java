@@ -26,6 +26,18 @@ public class TaskValidatorTest {
     private TaskValidator validator;
 
     @Test
+    public void shouldAllowCreateWhenTitleIsNotDuplicated(){
+        var dto = createTaskCreateRequestDTO();
+
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
+                .thenReturn(Optional.empty());
+
+        var result = validator.validateTaskCreateRequestDTO(dto);
+
+        assertFalse(result.isInvalid());
+    }
+
+    @Test
     public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringCreate(){
         var dto = createTaskCreateRequestDTO();
 
