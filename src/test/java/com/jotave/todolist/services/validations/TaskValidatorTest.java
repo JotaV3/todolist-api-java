@@ -43,12 +43,7 @@ public class TaskValidatorTest {
 
     @Test
     public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringUpdate(){
-        var dto = new TaskUpdateRequestDTO(
-                "Study Spring Boot",
-                "",
-                LocalDate.of(2026, 11, 10),
-                2
-        );
+        var dto = createTaskUpdateRequestDTO();
 
         Task otherTask = new Task();
         otherTask.setId(2L);
@@ -64,12 +59,7 @@ public class TaskValidatorTest {
 
     @Test
     public void shouldNotRejectOwnTitleDuringUpdate(){
-        var dto = new TaskUpdateRequestDTO(
-                "Study Spring Boot",
-                "",
-                LocalDate.of(2026, 11, 10),
-                2
-        );
+        var dto = createTaskUpdateRequestDTO();
 
         Task ownTask = new Task();
         ownTask.setId(1L);
@@ -89,6 +79,15 @@ public class TaskValidatorTest {
                 LocalDate.of(2026, 11, 10),
                 2,
                 1L
+        );
+    }
+
+    private TaskUpdateRequestDTO createTaskUpdateRequestDTO(){
+        return new TaskUpdateRequestDTO(
+                "Study Spring Boot",
+                "",
+                LocalDate.of(2026, 11, 10),
+                2
         );
     }
 }
