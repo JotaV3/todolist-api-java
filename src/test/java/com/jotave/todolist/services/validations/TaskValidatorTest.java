@@ -1,5 +1,6 @@
 package com.jotave.todolist.services.validations;
 
+import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.entities.Task;
 import com.jotave.todolist.repositories.TaskRepository;
@@ -23,6 +24,22 @@ public class TaskValidatorTest {
 
     @InjectMocks
     private TaskValidator validator;
+
+    @Test
+    public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringCreate(){
+        var dto = createTaskCreateRequestDTO();
+
+        Task otherTask = new Task();
+        otherTask.setId(2L);
+
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
+                .thenReturn(Optional.of(otherTask));
+
+        var result = validator.validateTaskCreateRequestDTO(dto);
+
+        assertTrue(result.isInvalid());
+        assertEquals("title", result.getInvalidFieldList().getFirst().name());
+    }
 
     @Test
     public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringUpdate(){
@@ -63,5 +80,15 @@ public class TaskValidatorTest {
         var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
 
         assertFalse(result.isInvalid());
+    }
+
+    private TaskCreateRequestDTO createTaskCreateRequestDTO(){
+        return new TaskCreateRequestDTO(
+                "Study Spring Boot",
+                "",
+                LocalDate.of(2026, 11, 10),
+                2,
+                1L
+        );
     }
 }
