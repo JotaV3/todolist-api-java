@@ -25,7 +25,7 @@ public class TaskValidatorTest {
     private TaskValidator validator;
 
     @Test
-    public void shouldRejectTitleAlreadyUsedByAnotherTask(){
+    public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringUpdate(){
         var dto = new TaskUpdateRequestDTO(
                 "Study Spring Boot",
                 "",
