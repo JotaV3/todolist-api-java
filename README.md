@@ -1,178 +1,148 @@
 # To-Do List API
 
-A RESTful API for managing users and tasks, developed with Java and Spring Boot.
+A RESTful API for managing users and their tasks, built with Java, Spring Boot, and Spring Data JPA.
 
-This project is part of my backend development journey, where I'm applying object-oriented programming, REST API design, database persistence, data validation, and layered architecture.
+This project is part of my backend development journey. It explores REST API design, data persistence, validation, DTOs, mapping, exception handling, and automated testing.
 
-> **Project Status:** 🚧 Work in Progress
+> **Project status:** Work in progress
 
-The API supports CRUD operations for users and tasks, uses DTOs to manage request and response data, and applies validation rules to incoming requests. I'm continuously improving its architecture and maintainability as I expand my backend development skills.
+## Features
 
-## 🚀 Technologies
+### User management
 
-* **Java** — Programming language
-* **Spring Boot** — Application framework
-* **Spring MVC** — REST API development
-* **Spring Data JPA** — Database access and persistence
-* **Hibernate** — Object-relational mapping (ORM)
-* **Jakarta Bean Validation** — Request validation
-* **Maven** — Dependency management and build automation
-* **H2 Database** — In-memory database for development
-* **PostgreSQL JDBC Driver** — PostgreSQL database connectivity
+- List all users and retrieve a user by ID.
+- Create, update, and delete users.
+- Validate user names, email addresses, phone numbers, and passwords.
+- Return user data through a response DTO that does not expose the password.
 
-## ✨ Features
+### Task management
 
-### User Management
+- List all tasks and retrieve a task by ID.
+- Create, update, and delete tasks.
+- Associate each task with an existing user.
+- Store a task title, description, due date, and status.
+- Prevent a user from creating tasks with duplicate titles.
+- Check for duplicate titles when updating a task, while allowing a task to keep its own title.
+- Preserve the task's user association when updating it.
 
-* Retrieve all users.
-* Retrieve a user by ID.
-* Create new users.
-* Update existing users.
-* Delete users.
+### Validation and error handling
 
-### Task Management
+- Validate request data with Jakarta Bean Validation.
+- Apply custom validation to task titles.
+- Handle resource-not-found and database-related errors.
+- Use request and response DTOs to define the API data contract.
 
-* Retrieve all tasks.
-* Retrieve a task by ID.
-* Create tasks associated with existing users.
-* Update task information while preserving the existing user association.
-* Delete tasks.
-* Manage task statuses using a Java enum.
+## Technologies
 
-### Architecture and Data Handling
+- **Java**
+- **Spring Boot**
+- **Spring Web MVC**
+- **Spring Data JPA** and **Hibernate**
+- **Jakarta Bean Validation**
+- **MapStruct**
+- **Lombok**
+- **Maven**
+- **H2** for local development and tests
+- **PostgreSQL JDBC driver** for PostgreSQL connectivity
 
-* Layered architecture separating resources, services, repositories, and entities.
-* Request and response DTOs to control the data accepted and returned by the API.
-* Validation of request fields using Jakarta Bean Validation.
-* Custom exceptions for resource-not-found and database-related errors.
-* Appropriate HTTP response codes for common CRUD operations.
-* Automatic generation of resource IDs through JPA identity generation.
-
-## 🏗️ Project Architecture
-
-The application follows a layered architecture to separate responsibilities and improve maintainability.
+## Project structure
 
 ```text
 src/
-└── main/
-    ├── java/
-    │   └── com/jotave/todolist/
-    │       ├── config/
-    │       ├── dtos/
-    │       │   ├── request/
-    │       │   │   ├── TaskCreateRequestDTO.java
-    │       │   │   ├── TaskUpdateRequestDTO.java
-    │       │   │   └── UserRequestDTO.java
-    │       │   └── response/
-    │       │       ├── TaskResponseDTO.java
-    │       │       └── UserResponseDTO.java
-    │       ├── entities/
-    │       │   └── enums/
-    │       ├── repositories/
-    │       ├── resources/
-    │       └── services/
-    │           └── exceptions/
-    │
-    └── resources/
-        ├── application.properties
-        └── application-test.properties
+├── main/
+│   ├── java/com/jotave/todolist/
+│   │   ├── controllers/       # HTTP endpoints
+│   │   ├── dtos/              # Request and response DTOs
+│   │   ├── entities/          # JPA entities and task status enum
+│   │   ├── mappers/           # DTO/entity mapping with MapStruct
+│   │   ├── repositories/      # Spring Data JPA repositories
+│   │   └── services/          # Business logic, validation, and exceptions
+│   └── resources/
+│       ├── application.yaml
+│       └── application-test.yaml
+└── test/
+    └── java/com/jotave/todolist/
+        ├── controllers/
+        └── services/validations/
 ```
 
-### Layer Responsibilities
+## API
 
-* **Resources:** Handle HTTP requests and responses.
-* **Services:** Implement business logic and coordinate application operations.
-* **Repositories:** Provide database access through Spring Data JPA.
-* **Entities:** Represent the application's persistent data model.
-* **Request DTOs:** Define the data accepted by each API operation.
-* **Response DTOs:** Define the data returned to API clients.
-* **Enums:** Represent the available task statuses.
-* **Exceptions:** Provide custom exception types for error handling.
-* **Config:** Configure application components and development data.
-
-## 📌 API Endpoints
-
-The API runs locally at `http://localhost:8080` by default.
+The application runs locally at `http://localhost:8080` by default.
 
 ### Users
 
-| Method   | Endpoint      | Description             |
-| -------- | ------------- | ----------------------- |
-| `GET`    | `/users`      | Retrieve all users      |
-| `GET`    | `/users/{id}` | Retrieve a user by ID   |
-| `POST`   | `/users`      | Create a new user       |
-| `PUT`    | `/users/{id}` | Update an existing user |
-| `DELETE` | `/users/{id}` | Delete a user           |
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/users` | List all users |
+| `GET` | `/users/{id}` | Retrieve a user |
+| `POST` | `/users` | Create a user |
+| `PUT` | `/users/{id}` | Update a user |
+| `DELETE` | `/users/{id}` | Delete a user |
 
 ### Tasks
 
-| Method   | Endpoint      | Description             |
-| -------- | ------------- | ----------------------- |
-| `GET`    | `/tasks`      | Retrieve all tasks      |
-| `GET`    | `/tasks/{id}` | Retrieve a task by ID   |
-| `POST`   | `/tasks`      | Create a new task       |
-| `PUT`    | `/tasks/{id}` | Update an existing task |
-| `DELETE` | `/tasks/{id}` | Delete a task           |
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| `GET` | `/tasks` | List all tasks |
+| `GET` | `/tasks/{id}` | Retrieve a task |
+| `POST` | `/tasks` | Create a task |
+| `PUT` | `/tasks/{id}` | Update a task |
+| `DELETE` | `/tasks/{id}` | Delete a task |
 
-## 📝 Example Requests
+Creating a user or task returns `201 Created` and a `Location` header. Successful deletions return `204 No Content`.
 
-The following examples illustrate the request formats accepted by the current API implementation.
+## Example requests
 
-### 1. Create a User
+### Create a user
 
-**POST** `/users`
+`POST /users`
 
 ```json
 {
-  "name": "John Doe",
-  "email": "john@example.com",
+  "name": "Jane Doe",
+  "email": "jane@example.com",
   "phone": "5551234567",
   "password": "example-password"
 }
 ```
 
-The user's ID is generated automatically.
+The response includes the generated user ID and public user fields; it does not include the password.
 
-The API validates the request fields, including the name, email, phone number, and password length.
+### Create a task
 
-### 2. Create a Task
-
-**POST** `/tasks`
+`POST /tasks`
 
 ```json
 {
   "title": "Study Java",
-  "description": "Practice Spring Boot and REST APIs",
+  "description": "Practice Spring Boot",
+  "dueDate": "2026-12-31",
   "taskStatusCode": 2,
   "userId": 1
 }
 ```
 
-The `userId` field identifies an existing user to associate with the task.
+`dueDate` uses the `YYYY-MM-DD` format. The `userId` must refer to an existing user. Task titles must be unique for each user.
 
-The application retrieves the specified user and establishes the relationship before saving the task.
+### Update a task
 
-If the specified user does not exist, the operation cannot be completed successfully.
-
-### 3. Update a Task
-
-**PUT** `/tasks/1`
+`PUT /tasks/1`
 
 ```json
 {
   "title": "Study Spring Boot",
-  "description": "Practice building REST APIs",
+  "description": "Build a REST API",
+  "dueDate": "2026-12-31",
   "taskStatusCode": 2
 }
 ```
 
-The task ID is provided through the URL.
+The task ID is provided in the URL. The update request does not include a `userId`, so the existing user association is preserved.
 
-The request uses `TaskUpdateRequestDTO`, which does not include `userId`. Updating a task therefore modifies its title, description, and status while preserving its existing user association.
+### Retrieve a task
 
-### 4. Retrieve a Task
-
-**GET** `/tasks/1`
+`GET /tasks/1`
 
 Example response:
 
@@ -180,72 +150,43 @@ Example response:
 {
   "id": 1,
   "title": "Study Spring Boot",
-  "description": "Practice building REST APIs",
+  "description": "Build a REST API",
+  "dueDate": "2026-12-31",
   "taskStatus": "InProgress",
   "user": {
     "id": 1,
-    "name": "John Doe",
-    "email": "john@example.com",
+    "name": "Jane Doe",
+    "email": "jane@example.com",
     "phone": "5551234567"
   }
 }
 ```
 
-The response uses `TaskResponseDTO` and includes information about the associated user without exposing the user's password.
+### Task status
 
-### 5. Task Status
+Requests use the numeric `taskStatusCode`; responses include the corresponding status name.
 
-Tasks use a Java enum called `TaskStatus`.
+| Code | Status |
+| --- | --- |
+| `1` | `Completed` |
+| `2` | `InProgress` |
+| `3` | `Paused` |
 
-| Code | Status     |
-| ---- | ---------- |
-| `1`  | Completed  |
-| `2`  | InProgress |
-| `3`  | Paused     |
-
-Task creation and update requests use the numeric `taskStatusCode`. Task responses expose the corresponding status name through the `taskStatus` field.
-
-## ✅ Request Validation
-
-The API uses Jakarta Bean Validation to define rules for incoming request data.
-
-Examples of the implemented validation constraints include:
-
-* `@NotBlank` — Rejects missing or blank text fields.
-* `@Email` — Checks the email format.
-* `@Size` — Defines minimum or maximum field lengths.
-* `@Min` and `@Max` — Restrict numeric values, including task status codes.
-* `@Positive` — Requires a positive user ID.
-* `@Valid` — Triggers validation of request DTOs in the controllers.
-
-For example, a request containing a blank task title or an invalid email format should be rejected when it violates the corresponding validation rules.
-
-## ⚙️ Running the Project
+## Run locally
 
 ### Prerequisites
 
-* Git
-* A JDK compatible with the Java version configured in `pom.xml`
+- Git
+- A JDK compatible with the project's Maven configuration
 
-### 1. Clone the Repository
+### Clone the repository
 
 ```bash
 git clone https://github.com/JotaV3/todolist-api-java.git
-```
-
-### 2. Navigate to the Project Directory
-
-```bash
 cd todolist-api-java
 ```
 
-### 3. Run the Application
-
-On Windows:
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
+### Start the application
 
 On Linux or macOS:
 
@@ -253,64 +194,54 @@ On Linux or macOS:
 ./mvnw spring-boot:run
 ```
 
-Once the application starts, the API will be available at:
+On Windows:
 
-`http://localhost:8080`
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-You can test the endpoints using Postman, Insomnia, or another HTTP client.
+The API will be available at `http://localhost:8080`.
 
-## 🗄️ Database Configuration
+### Run the tests
 
-The current development configuration uses an in-memory H2 database and activates the `test` Spring profile.
+On Linux or macOS:
 
-The default JDBC URL is:
+```bash
+./mvnw test
+```
 
-`jdbc:h2:mem:test`
+On Windows:
 
-The H2 Console is available at:
+```powershell
+.\mvnw.cmd test
+```
 
-`http://localhost:8080/h2-console`
+You can test the endpoints with Postman, Insomnia, or another HTTP client.
+
+## Database
+
+The default configuration uses a file-based H2 database:
+
+```text
+jdbc:h2:file:./data/todolist-db
+```
+
+The H2 Console is enabled at:
+
+```text
+http://localhost:8080/h2-console
+```
 
 Use the following connection settings:
 
-| Setting  | Value              |
-| -------- | ------------------ |
-| JDBC URL | `jdbc:h2:mem:test` |
-| Username | `sa`               |
-| Password | Leave empty        |
+| Setting | Value |
+| --- | --- |
+| JDBC URL | `jdbc:h2:file:./data/todolist-db` |
+| Username | `sa` |
+| Password | `sa` |
 
-Because the database is in memory, its data is not preserved when the application stops.
+The test profile uses an in-memory H2 database and recreates the schema for tests. A PostgreSQL JDBC driver is included in the project, while H2 is used by the default application configuration.
 
-The project also includes the PostgreSQL JDBC driver for PostgreSQL connectivity. The default configuration currently uses H2.
-
-## 🔧 Planned Improvements
-
-The project is still under development. Future improvements may include:
-
-* Centralized exception handling and standardized API error responses.
-* Secure password hashing and authentication.
-* Expanded automated test coverage.
-* Improved database configuration for different environments.
-* Additional validation and refinement of business rules.
-* Further improvements to code organization and maintainability.
-
-## 🎯 Learning Goals
-
-This project helps me strengthen my backend development skills through practical implementation.
-
-Key areas of learning include:
-
-* RESTful API design and HTTP methods.
-* Object-oriented programming with Java.
-* Database relationships and persistence with JPA.
-* Separation of responsibilities through layered architecture.
-* Request and response DTOs.
-* Input validation and exception handling.
-* Data mapping between DTOs and entities.
-* Writing maintainable and well-organized code.
-
-The project will continue to evolve as I implement new features and improve the existing architecture.
-
----
+##
 
 **Developer:** [JotaV3](https://github.com/JotaV3)
