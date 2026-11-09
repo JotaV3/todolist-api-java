@@ -11,7 +11,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("""
         SELECT t
         FROM Task t
-        WHERE userId = :userId AND t.title = :title
+        WHERE t.user.id = :userId AND t.title = :title
     """)
-    Optional<Task> findTaskByTitleAndUserId(@Param("title") String title, @Param("userId") Long userId);
+    Optional<Task> findTaskByTitleAndUserId(
+            @Param("title") String title,
+            @Param("userId") Long userId
+    );
 }
