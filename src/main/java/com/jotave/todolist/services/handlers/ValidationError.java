@@ -10,9 +10,9 @@ public record ValidationError(
         Integer status,
         String error,
         String path,
-        List<InvalidField> invalidFieldsList
+        List<InvalidField> invalidFieldList
 ) {
-    public ValidationError(Integer status, String error, String path, List<InvalidField> invalidFieldsList) {
-        this(Instant.now(), status, error, path, invalidFieldsList);
+    public ValidationError(Integer status, String error, String path, List<InvalidField> invalidFieldList) {
+        this(Instant.now(), status, error, path, invalidFieldList);
     }
 }
