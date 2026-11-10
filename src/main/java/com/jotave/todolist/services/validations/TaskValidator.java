@@ -20,7 +20,7 @@ public class TaskValidator {
                 .isEmpty();
 
         if(hasDuplicate){
-            result.addInvalidFieldToList(new InvalidField("title", "Task already exist."));
+            result.addInvalidFieldToList(new InvalidField("title", "Task already exists."));
         }
 
         return result;
