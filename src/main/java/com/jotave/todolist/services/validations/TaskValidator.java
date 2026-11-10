@@ -15,8 +15,11 @@ public class TaskValidator {
     public ValidatorResult validateTaskCreateRequestDTO(TaskCreateRequestDTO dto){
         var result = ValidatorResult.newValidationResult();
 
-        boolean isListNotEmpty = repository.findTaskByTitleAndUserId(dto.title(), dto.userId()).isPresent();
-        if(isListNotEmpty){
+        boolean hasDuplicate = !repository
+                .findTaskByTitleAndUserId(dto.title(), dto.userId())
+                .isEmpty();
+
+        if(hasDuplicate){
             result.addInvalidFieldToList(new InvalidField("title", "Task already exist."));
         }
 
@@ -27,11 +30,16 @@ public class TaskValidator {
         var result = ValidatorResult.newValidationResult();
 
         // Verify if exists different tasks with the same title
-        repository.findTaskByTitleAndUserId(dto.title(), userId)
-                .filter(existingTask -> !existingTask.getId().equals(taskId))
-                .ifPresent(existingTask -> result.addInvalidFieldToList(
-                        new InvalidField("title", "Task already exists."))
-                );
+        boolean hasDuplicate = repository
+                .findTaskByTitleAndUserId(dto.title(), userId)
+                .stream()
+                .anyMatch(existingTask -> !existingTask.getId().equals(taskId));
+
+        if(hasDuplicate){
+            result.addInvalidFieldToList(
+                    new InvalidField("title", "Task already exists.")
+            );
+        }
 
         return result;
     }

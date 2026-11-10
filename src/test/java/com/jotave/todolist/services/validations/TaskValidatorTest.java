@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +31,7 @@ public class TaskValidatorTest {
         var dto = createTaskCreateRequestDTO();
 
         when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
-                .thenReturn(Optional.empty());
+                .thenReturn(Collections.emptyList());
 
         var result = validator.validateTaskCreateRequestDTO(dto);
 
@@ -45,7 +46,7 @@ public class TaskValidatorTest {
         otherTask.setId(2L);
 
         when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
-                .thenReturn(Optional.of(otherTask));
+                .thenReturn(Collections.singletonList(otherTask));
 
         var result = validator.validateTaskCreateRequestDTO(dto);
 
@@ -61,7 +62,7 @@ public class TaskValidatorTest {
         otherTask.setId(2L);
 
         when(repository.findTaskByTitleAndUserId("Study Spring Boot", 5L))
-                .thenReturn(Optional.of(otherTask));
+                .thenReturn(Collections.singletonList(otherTask));
 
         var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
 
@@ -77,7 +78,7 @@ public class TaskValidatorTest {
         ownTask.setId(1L);
 
         when(repository.findTaskByTitleAndUserId("Study Spring Boot", 5L))
-                .thenReturn(Optional.of(ownTask));
+                .thenReturn(Collections.singletonList(ownTask));
 
         var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
 
