@@ -11,11 +11,7 @@ public record ValidationError(
         String path,
         ValidatorResult invalidFieldsList
 ) {
-    public ValidationError(Instant timestamp, Integer status, String error, String path, ValidatorResult invalidFieldsList) {
-        this.timestamp = Instant.now();
-        this.status = status;
-        this.error = error;
-        this.path = path;
-        this.invalidFieldsList = invalidFieldsList;
+    public ValidationError(Integer status, String error, String path, ValidatorResult invalidFieldsList) {
+        this(Instant.now(), status, error, path, invalidFieldsList);
     }
 }
