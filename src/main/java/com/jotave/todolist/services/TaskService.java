@@ -35,6 +35,10 @@ public class TaskService {
     @Autowired
     private UserService userService;
 
+    public List<Task> findAllByUserId(Long userId){
+        return repository.findAllByUserId(userId);
+    }
+
     public List<Task> findAll(){
         return repository.findAll();
     }

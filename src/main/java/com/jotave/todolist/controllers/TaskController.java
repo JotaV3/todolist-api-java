@@ -26,12 +26,18 @@ public class TaskController {
     @Autowired
     private TaskMapper mapper;
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TaskResponseDTO>> findAllByUserId(@PathVariable Long userId){
+        List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAllByUserId(userId));
+
+        System.out.print(dto);
+
+        return ResponseEntity.ok().body(dto);
+    }
+
     @GetMapping
     public ResponseEntity<List<TaskResponseDTO>> findAll(){
-        List<TaskResponseDTO> dto = service.findAll()
-                .stream()
-                .map(task -> mapper.toTaskResponseDTO(task))
-                .toList();
+        List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAll());
 
         return ResponseEntity.ok().body(dto);
     }
@@ -68,5 +74,12 @@ public class TaskController {
         service.delete(id);
 
         return ResponseEntity.noContent().build();
+    }
+
+    private List<TaskResponseDTO> mapAllTasksToTaskResponseDTO(List<Task> taskList){
+        return taskList
+                .stream()
+                .map(task -> mapper.toTaskResponseDTO(task))
+                .toList();
     }
 }
