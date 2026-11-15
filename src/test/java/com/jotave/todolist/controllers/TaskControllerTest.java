@@ -1,12 +1,11 @@
 package com.jotave.todolist.controllers;
 
-import com.jotave.todolist.dtos.response.TaskResponseDTO;
-import com.jotave.todolist.entities.Task;
-import com.jotave.todolist.entities.User;
-import com.jotave.todolist.entities.enums.TaskStatus;
-import com.jotave.todolist.repositories.TaskRepository;
-import com.jotave.todolist.repositories.UserRepository;
-import com.jotave.todolist.services.exceptions.ResourceNotFoundException;
+import com.jotave.todolist.api.dtos.response.TaskResponseDTO;
+import com.jotave.todolist.model.entities.Task;
+import com.jotave.todolist.model.entities.User;
+import com.jotave.todolist.model.entities.enums.TaskStatus;
+import com.jotave.todolist.infra.repositories.TaskRepository;
+import com.jotave.todolist.infra.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

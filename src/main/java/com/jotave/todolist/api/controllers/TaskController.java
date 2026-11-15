@@ -1,0 +1,83 @@
+package com.jotave.todolist.api.controllers;
+
+import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
+import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
+import com.jotave.todolist.api.dtos.response.TaskResponseDTO;
+import com.jotave.todolist.model.entities.Task;
+import com.jotave.todolist.api.mappers.TaskMapper;
+import com.jotave.todolist.application.services.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
+import java.util.List;
+
+@RestController
+@CrossOrigin("*")
+@RequestMapping("/api/tasks")
+public class TaskController {
+
+    @Autowired
+    private TaskService service;
+
+    @Autowired
+    private TaskMapper mapper;
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<TaskResponseDTO>> findAllByUserId(@PathVariable Long userId){
+        List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAllByUserId(userId));
+
+        return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<TaskResponseDTO>> findAll(){
+        List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAll());
+
+        return ResponseEntity.ok().body(dto);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> findById(@PathVariable Long id){
+        Task task = service.findById(id);
+
+        return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
+    }
+
+    @PostMapping
+    public ResponseEntity<TaskResponseDTO> insert(@Valid @RequestBody TaskCreateRequestDTO dto){
+        Task task = service.insert(dto, dto.userId());
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(task.getId())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(mapper.toTaskResponseDTO(task));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskResponseDTO> update(@PathVariable Long id, @Valid @RequestBody TaskUpdateRequestDTO dto){
+        Task task = service.update(id, dto);
+
+        return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id){
+        service.delete(id);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private List<TaskResponseDTO> mapAllTasksToTaskResponseDTO(List<Task> taskList){
+        return taskList
+                .stream()
+                .map(task -> mapper.toTaskResponseDTO(task))
+                .toList();
+    }
+}

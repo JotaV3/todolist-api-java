@@ -1,9 +1,10 @@
 package com.jotave.todolist.services.validations;
 
-import com.jotave.todolist.dtos.request.TaskCreateRequestDTO;
-import com.jotave.todolist.dtos.request.TaskUpdateRequestDTO;
-import com.jotave.todolist.entities.Task;
-import com.jotave.todolist.repositories.TaskRepository;
+import com.jotave.todolist.application.services.validations.TaskValidator;
+import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
+import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
+import com.jotave.todolist.model.entities.Task;
+import com.jotave.todolist.infra.repositories.TaskRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,7 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
