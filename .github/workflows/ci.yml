@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download code
+        uses: actions/checkout@v4
+
+      - name: Configure Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 25
+          cache: maven
+
+      - name: mvnw permission
+        run: chmod +x mvnw
+
+      - name: Run tests
+        run: ./mvnw test
+
+      - name: Build
+        run: ./mvnw package -DskipTests
