@@ -37,7 +37,7 @@ public class UserControllerTest {
     public void shouldReturnAllUsers() throws Exception{
         User user = createUser();
 
-        ResultActions result = mockMvc.perform(get("/users"));
+        ResultActions result = mockMvc.perform(get("/api/users"));
 
         // Result based on UserResponseDTO
         result
@@ -52,7 +52,7 @@ public class UserControllerTest {
     public void shouldReturnUser() throws Exception {
         User user = createUser();
 
-        ResultActions result = mockMvc.perform(get("/users/" + user.getId()));
+        ResultActions result = mockMvc.perform(get("/api/users/" + user.getId()));
 
         // Result based on UserResponseDTO
         result
@@ -76,7 +76,7 @@ public class UserControllerTest {
                 }
                 """.formatted(email);
 
-        ResultActions result = mockMvc.perform(post("/users")
+        ResultActions result = mockMvc.perform(post("/api/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
 
@@ -106,7 +106,7 @@ public class UserControllerTest {
     public void shouldDeleteUser() throws Exception{
         User user = createUser();
 
-        mockMvc.perform(delete("/users/" + user.getId()))
+        mockMvc.perform(delete("/api/users/" + user.getId()))
                 .andExpect(status().isNoContent());
 
         assertFalse(repository.existsById(user.getId()));

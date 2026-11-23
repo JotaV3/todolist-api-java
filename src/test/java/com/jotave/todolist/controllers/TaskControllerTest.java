@@ -44,7 +44,7 @@ public class TaskControllerTest {
     public void shouldReturnAllTasks() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(get("/tasks"));
+        ResultActions result = mockMvc.perform(get("/api/tasks"));
 
         // Result based on TaskResponseDTO
         result
@@ -62,7 +62,7 @@ public class TaskControllerTest {
     public void shouldReturnTask() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(get("/tasks/" + task.getId()));
+        ResultActions result = mockMvc.perform(get("/api/tasks/" + task.getId()));
 
         // Result based on TaskResponseDTO
         result
@@ -92,7 +92,7 @@ public class TaskControllerTest {
                 }
                 """.formatted(user.getId());
 
-        ResultActions result = mockMvc.perform(post("/tasks")
+        ResultActions result = mockMvc.perform(post("/api/tasks")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(json));
 
@@ -127,7 +127,7 @@ public class TaskControllerTest {
     public void shouldDeleteTask() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(delete("/tasks/" + task.getId()));
+        ResultActions result = mockMvc.perform(delete("/api/tasks/" + task.getId()));
 
         // Result based on TaskResponseDTO
         result
