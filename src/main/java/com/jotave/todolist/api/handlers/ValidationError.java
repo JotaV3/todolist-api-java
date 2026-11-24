@@ -1,6 +1,6 @@
 package com.jotave.todolist.api.handlers;
 
-import com.jotave.todolist.application.services.validations.InvalidField;
+import com.jotave.todolist.application.validations.InvalidField;
 
 import java.time.Instant;
 import java.util.List;

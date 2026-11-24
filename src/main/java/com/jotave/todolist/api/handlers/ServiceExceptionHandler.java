@@ -1,8 +1,8 @@
 package com.jotave.todolist.api.handlers;
 
-import com.jotave.todolist.application.services.exceptions.DatabaseException;
-import com.jotave.todolist.application.services.exceptions.ResourceNotFoundException;
-import com.jotave.todolist.application.services.exceptions.ValidationException;
+import com.jotave.todolist.application.exceptions.DatabaseException;
+import com.jotave.todolist.application.exceptions.ResourceNotFoundException;
+import com.jotave.todolist.application.exceptions.ValidationException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
