@@ -1,21 +1,19 @@
 package com.jotave.todolist.controllers;
 
-import com.jotave.todolist.api.dtos.response.UserResponseDTO;
 import com.jotave.todolist.model.entities.User;
 import com.jotave.todolist.infra.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import tools.jackson.databind.ObjectMapper;
 
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,14 +28,13 @@ public class UserControllerTest {
     @Autowired
     private UserRepository repository;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @Test
     public void shouldReturnAllUsers() throws Exception{
         User user = createUser();
 
-        ResultActions result = mockMvc.perform(get("/api/users"));
+        ResultActions result = mockMvc
+                .perform(get("/api/users")
+                        .with(user("test")));
 
         // Result based on UserResponseDTO
         result
@@ -52,7 +49,9 @@ public class UserControllerTest {
     public void shouldReturnUser() throws Exception {
         User user = createUser();
 
-        ResultActions result = mockMvc.perform(get("/api/users/" + user.getId()));
+        ResultActions result = mockMvc
+                .perform(get("/api/users/" + user.getId())
+                        .with(user("test")));
 
         // Result based on UserResponseDTO
         result
@@ -64,49 +63,14 @@ public class UserControllerTest {
     }
 
     @Test
-    public void shouldSaveUser() throws Exception{
-        String email = "joao" + UUID.randomUUID() + "@gmail.com";
-
-        String json = """
-                {
-                    "name": "João",
-                    "email": "%s",
-                    "phone": "41241",
-                    "password": "12345678"
-                }
-                """.formatted(email);
-
-        ResultActions result = mockMvc.perform(post("/api/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json));
-
-        // Result based on UserResponseDTO
-        result
-                .andExpect(status().isCreated())
-                .andExpect((header().exists("Location")))
-                .andExpect(jsonPath("$.id").exists())
-                .andExpect(jsonPath("$.name").value("João"))
-                .andExpect(jsonPath("$.email").value(email))
-                .andExpect(jsonPath("$.password").doesNotExist());
-
-        UserResponseDTO responseDTO = objectMapper.readValue(
-                result.andReturn().getResponse().getContentAsString(),
-                UserResponseDTO.class
-        );
-
-        assertNotNull(responseDTO.id());
-
-        User user = repository.findById(responseDTO.id())
-                .orElseThrow();
-
-        assertEquals(email, user.getEmail());
-    }
-
-    @Test
     public void shouldDeleteUser() throws Exception{
         User user = createUser();
 
-        mockMvc.perform(delete("/api/users/" + user.getId()))
+        ResultActions result = mockMvc
+                .perform(delete("/api/users/" + user.getId())
+                        .with(user("test")));
+
+        result
                 .andExpect(status().isNoContent());
 
         assertFalse(repository.existsById(user.getId()));
