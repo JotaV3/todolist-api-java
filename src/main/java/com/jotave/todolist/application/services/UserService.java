@@ -9,6 +9,7 @@ import com.jotave.todolist.application.exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,6 +17,8 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Autowired
     private UserRepository repository;
@@ -34,13 +37,16 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
     }
 
-    public User findByEmail(String email){
-        return repository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Email not found. Email: " + email));
+    public boolean existsByEmail(String email){
+        return repository.existsByEmail(email);
     }
 
-    public User insert(UserRequestDTO dto){
+    public User save(UserRequestDTO dto){
         User user = mapper.toEntity(dto);
+
+        // encrypts the user's password
+        String encryptedPassword = encoder.encode(dto.password());
+        user.setPassword(encryptedPassword);
 
         return repository.save(user);
     }
