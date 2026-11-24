@@ -26,8 +26,8 @@ public class UserService {
     @Autowired
     private UserMapper mapper;
 
-    public List<User> findAll(){
-        return repository.findAll();
+    public boolean existsByEmail(String email){
+        return repository.existsByEmail(email);
     }
 
     public User findById(Long id){
@@ -35,10 +35,6 @@ public class UserService {
 
         return optionalUser
                 .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
-    }
-
-    public boolean existsByEmail(String email){
-        return repository.existsByEmail(email);
     }
 
     public User save(UserRequestDTO dto){
