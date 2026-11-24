@@ -1,5 +1,8 @@
 package com.jotave.todolist.controllers;
 
+import com.jotave.todolist.api.dtos.request.UserRequestDTO;
+import com.jotave.todolist.api.mappers.UserMapper;
+import com.jotave.todolist.application.services.JwtService;
 import com.jotave.todolist.model.entities.User;
 import com.jotave.todolist.infra.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -14,6 +17,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,30 +32,21 @@ public class UserControllerTest {
     @Autowired
     private UserRepository repository;
 
-    @Test
-    public void shouldReturnAllUsers() throws Exception{
-        User user = createUser();
+    @Autowired
+    private UserMapper mapper;
 
-        ResultActions result = mockMvc
-                .perform(get("/api/users")
-                        .with(user("test")));
-
-        // Result based on UserResponseDTO
-        result
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[?(@.id == %d)]"
-                        .formatted(user.getId()))
-                        .isNotEmpty());
-    }
+    @Autowired
+    private JwtService jwtService;
 
     @Test
     public void shouldReturnUser() throws Exception {
         User user = createUser();
+        String token = jwtService.generateToken(user);
 
         ResultActions result = mockMvc
-                .perform(get("/api/users/" + user.getId())
-                        .with(user("test")));
+                .perform(get("/api/users/me")
+                        .header(AUTHORIZATION, "Bearer " + token)
+                );
 
         // Result based on UserResponseDTO
         result
@@ -65,10 +60,11 @@ public class UserControllerTest {
     @Test
     public void shouldDeleteUser() throws Exception{
         User user = createUser();
+        String token = jwtService.generateToken(user);
 
         ResultActions result = mockMvc
-                .perform(delete("/api/users/" + user.getId())
-                        .with(user("test")));
+                .perform(delete("/api/users/me")
+                        .header(AUTHORIZATION, "Bearer " + token));
 
         result
                 .andExpect(status().isNoContent());
@@ -79,13 +75,14 @@ public class UserControllerTest {
     private User createUser(){
         String email = "joao" + UUID.randomUUID() + "@gmail.com";
 
-        User user = new User(
-                null,
+        UserRequestDTO dto = new UserRequestDTO(
                 "João",
                 email,
                 "41241",
                 "12345678"
         );
+
+        User user = mapper.toEntity(dto);
 
         return repository.save(user);
    }
