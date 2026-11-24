@@ -41,19 +41,6 @@ public class UserController {
         return ResponseEntity.ok().body(mapper.toUserResponseDTO(user));
     }
 
-    @PostMapping
-    public ResponseEntity<UserResponseDTO> insert(@Valid @RequestBody UserRequestDTO dto){
-        User user = service.insert(dto);
-
-        URI uri = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(user.getId())
-                .toUri();
-
-        return ResponseEntity.created(uri).body(mapper.toUserResponseDTO(user));
-    }
-
     @PutMapping("/{id}")
     public ResponseEntity<UserResponseDTO> update(@PathVariable Long id, @Valid @RequestBody UserRequestDTO dto){
         User user = service.update(id, dto);
