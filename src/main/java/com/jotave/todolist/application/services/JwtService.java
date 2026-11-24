@@ -1,6 +1,7 @@
 package com.jotave.todolist.application.services;
 
 import com.jotave.todolist.model.entities.User;
+import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -16,6 +17,7 @@ public class JwtService {
 
     private final JwtEncoder jwtEncoder;
 
+    @Getter
     @Value("${app.jwt.expiration-seconds}")
     private long expirationSeconds;
 
