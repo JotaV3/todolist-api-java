@@ -20,6 +20,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -44,7 +45,9 @@ public class TaskControllerTest {
     public void shouldReturnAllTasks() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(get("/api/tasks"));
+        ResultActions result = mockMvc
+                .perform(get("/api/tasks")
+                        .with(user("test")));
 
         // Result based on TaskResponseDTO
         result
@@ -62,7 +65,9 @@ public class TaskControllerTest {
     public void shouldReturnTask() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(get("/api/tasks/" + task.getId()));
+        ResultActions result = mockMvc
+                .perform(get("/api/tasks/" + task.getId())
+                        .with(user("test")));
 
         // Result based on TaskResponseDTO
         result
@@ -92,9 +97,11 @@ public class TaskControllerTest {
                 }
                 """.formatted(user.getId());
 
-        ResultActions result = mockMvc.perform(post("/api/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json));
+        ResultActions result = mockMvc
+                .perform(post("/api/tasks")
+                        .with(user("test"))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json));
 
         // Result based on TaskResponseDTO
         result
@@ -127,7 +134,9 @@ public class TaskControllerTest {
     public void shouldDeleteTask() throws Exception{
         Task task = createTask();
 
-        ResultActions result = mockMvc.perform(delete("/api/tasks/" + task.getId()));
+        ResultActions result = mockMvc
+                .perform(delete("/api/tasks/" + task.getId())
+                        .with(user("test")));
 
         // Result based on TaskResponseDTO
         result

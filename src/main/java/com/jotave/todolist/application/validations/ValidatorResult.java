@@ -1,4 +1,4 @@
-package com.jotave.todolist.application.services.validations;
+package com.jotave.todolist.application.validations;
 
 import lombok.Getter;
 

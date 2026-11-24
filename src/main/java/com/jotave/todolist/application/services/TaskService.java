@@ -6,10 +6,10 @@ import com.jotave.todolist.model.entities.Task;
 import com.jotave.todolist.model.entities.User;
 import com.jotave.todolist.api.mappers.TaskMapper;
 import com.jotave.todolist.infra.repositories.TaskRepository;
-import com.jotave.todolist.application.services.exceptions.DatabaseException;
-import com.jotave.todolist.application.services.exceptions.ResourceNotFoundException;
-import com.jotave.todolist.application.services.exceptions.ValidationException;
-import com.jotave.todolist.application.services.validations.TaskValidator;
+import com.jotave.todolist.application.exceptions.DatabaseException;
+import com.jotave.todolist.application.exceptions.ResourceNotFoundException;
+import com.jotave.todolist.application.exceptions.ValidationException;
+import com.jotave.todolist.application.validations.TaskValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
@@ -43,7 +43,8 @@ public class TaskService {
     public Task findById(Long id){
         Optional<Task> optionalTask = repository.findById(id);
 
-        return optionalTask.orElseThrow(() -> new ResourceNotFoundException(id));
+        return optionalTask
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found. Id: " + id));
     }
 
     public Task insert(TaskCreateRequestDTO dto, Long userId){
@@ -62,7 +63,7 @@ public class TaskService {
 
     public Task update(Long id, TaskUpdateRequestDTO dto){
         Task task = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException(id));
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found. Id: " + id));
 
         var result = validator.validateTaskUpdateRequestDTO(id, dto, task.getUser().getId());
 
@@ -77,7 +78,7 @@ public class TaskService {
 
     public void delete(Long id){
         if(!repository.existsById(id)){
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException("Task not found. Id: " + id);
         }
 
         try{

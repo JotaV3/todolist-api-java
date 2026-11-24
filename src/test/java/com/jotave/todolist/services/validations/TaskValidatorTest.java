@@ -1,6 +1,6 @@
 package com.jotave.todolist.services.validations;
 
-import com.jotave.todolist.application.services.validations.TaskValidator;
+import com.jotave.todolist.application.validations.TaskValidator;
 import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
 import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.model.entities.Task;

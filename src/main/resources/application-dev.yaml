@@ -17,3 +17,8 @@ spring:
     console:
       enabled: true
       path: /h2-console
+
+app:
+  jwt:
+    secret: local-development-only-jwt-secret-change-before-deploying
+    expiration-seconds: 3600

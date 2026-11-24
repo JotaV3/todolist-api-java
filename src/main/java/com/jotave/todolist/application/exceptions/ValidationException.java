@@ -1,6 +1,6 @@
-package com.jotave.todolist.application.services.exceptions;
+package com.jotave.todolist.application.exceptions;
 
-import com.jotave.todolist.application.services.validations.InvalidField;
+import com.jotave.todolist.application.validations.InvalidField;
 import lombok.Getter;
 
 import java.util.List;

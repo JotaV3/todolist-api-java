@@ -1,4 +1,4 @@
-package com.jotave.todolist.application.services.exceptions;
+package com.jotave.todolist.application.exceptions;
 
 public class DatabaseException extends RuntimeException {
     public DatabaseException(String message) {
