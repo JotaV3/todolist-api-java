@@ -30,7 +30,13 @@ public class UserService {
     public User findById(Long id){
         Optional<User> optionalUser = repository.findById(id);
 
-        return optionalUser.orElseThrow(() -> new ResourceNotFoundException(id));
+        return optionalUser
+                .orElseThrow(() -> new ResourceNotFoundException("User not found. Id: " + id));
+    }
+
+    public User findByEmail(String email){
+        return repository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Email not found. Email: " + email));
     }
 
     public User insert(UserRequestDTO dto){
@@ -46,13 +52,13 @@ public class UserService {
 
             return repository.save(user);
         } catch (EntityNotFoundException e) {
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException("User not found. Id: " + id);
         }
     }
 
     public void delete(Long id){
         if(!repository.existsById(id)){
-            throw new ResourceNotFoundException(id);
+            throw new ResourceNotFoundException("User not found. Id: " + id);
         }
 
         try {
