@@ -1,7 +1,6 @@
 package com.jotave.todolist.api.controllers;
 
-import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
-import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
+import com.jotave.todolist.api.dtos.request.TaskRequestDTO;
 import com.jotave.todolist.api.dtos.response.TaskResponseDTO;
 import com.jotave.todolist.model.entities.Task;
 import com.jotave.todolist.api.mappers.TaskMapper;
@@ -9,11 +8,14 @@ import com.jotave.todolist.application.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @CrossOrigin("*")
@@ -26,50 +28,52 @@ public class TaskController {
     @Autowired
     private TaskMapper mapper;
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<TaskResponseDTO>> findAllByUserId(@PathVariable Long userId){
+    @GetMapping("/me")
+    public ResponseEntity<List<TaskResponseDTO>> findAllByUserId(
+            @AuthenticationPrincipal Jwt jwt
+    ){
+        Long userId = getUserIdByJwt(jwt);
         List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAllByUserId(userId));
 
         return ResponseEntity.ok().body(dto);
     }
 
-    @GetMapping
-    public ResponseEntity<List<TaskResponseDTO>> findAll(){
-        List<TaskResponseDTO> dto = mapAllTasksToTaskResponseDTO(service.findAll());
-
-        return ResponseEntity.ok().body(dto);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> findById(@PathVariable Long id){
-        Task task = service.findById(id);
-
-        return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
-    }
-
-    @PostMapping
-    public ResponseEntity<TaskResponseDTO> insert(@Valid @RequestBody TaskCreateRequestDTO dto){
-        Task task = service.insert(dto, dto.userId());
+    @PostMapping("/me")
+    public ResponseEntity<TaskResponseDTO> insert(
+            @AuthenticationPrincipal Jwt jwt,
+            @Valid @RequestBody TaskRequestDTO dto
+    ){
+        Long userId = getUserIdByJwt(jwt);
+        Task task = service.insert(userId, dto);
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
+                .path("/me")
                 .buildAndExpand(task.getId())
                 .toUri();
 
         return ResponseEntity.created(uri).body(mapper.toTaskResponseDTO(task));
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<TaskResponseDTO> update(@PathVariable Long id, @Valid @RequestBody TaskUpdateRequestDTO dto){
-        Task task = service.update(id, dto);
+    @PutMapping("/{id}/me")
+    public ResponseEntity<TaskResponseDTO> update(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long id,
+            @Valid @RequestBody TaskRequestDTO dto
+    ){
+        Long userId = getUserIdByJwt(jwt);
+        Task task = service.update(id, userId, dto);
 
         return ResponseEntity.ok().body(mapper.toTaskResponseDTO(task));
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id){
-        service.delete(id);
+    @DeleteMapping("/{id}/me")
+    public ResponseEntity<Void> delete(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable Long id
+    ){
+        Long userId = getUserIdByJwt(jwt);
+        service.delete(id, userId);
 
         return ResponseEntity.noContent().build();
     }
@@ -79,5 +83,10 @@ public class TaskController {
                 .stream()
                 .map(task -> mapper.toTaskResponseDTO(task))
                 .toList();
+    }
+
+    private Long getUserIdByJwt(Jwt jwt){
+        // gets the id of User through jwt.getSubject()
+        return Long.valueOf(Objects.requireNonNull(jwt.getSubject()));
     }
 }

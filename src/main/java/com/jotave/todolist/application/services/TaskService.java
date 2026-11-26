@@ -1,7 +1,6 @@
 package com.jotave.todolist.application.services;
 
-import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
-import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
+import com.jotave.todolist.api.dtos.request.TaskRequestDTO;
 import com.jotave.todolist.model.entities.Task;
 import com.jotave.todolist.model.entities.User;
 import com.jotave.todolist.api.mappers.TaskMapper;
@@ -36,36 +35,27 @@ public class TaskService {
         return repository.findAllByUserId(userId);
     }
 
-    public List<Task> findAll(){
-        return repository.findAll();
-    }
+    public Task insert(Long userId, TaskRequestDTO dto){
 
-    public Task findById(Long id){
-        Optional<Task> optionalTask = repository.findById(id);
-
-        return optionalTask
-                .orElseThrow(() -> new ResourceNotFoundException("Task not found. Id: " + id));
-    }
-
-    public Task insert(TaskCreateRequestDTO dto, Long userId){
-        var result = validator.validateTaskCreateRequestDTO(dto);
+        // id is null because the task is yet to be created
+        var result = validator.validateTaskRequestDTO(null, userId, dto);
 
         if(result.isInvalid()){
             throw new ValidationException(result.getInvalidFieldList());
         }
 
-        // return user if exist
+        // return user if exists
         User user = userService.findById(userId);
         Task task = mapper.toEntity(dto, user);
 
         return repository.save(task);
     }
 
-    public Task update(Long id, TaskUpdateRequestDTO dto){
+    public Task update(Long id, Long userId, TaskRequestDTO dto){
         Task task = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found. Id: " + id));
 
-        var result = validator.validateTaskUpdateRequestDTO(id, dto, task.getUser().getId());
+        var result = validator.validateTaskRequestDTO(id, userId, dto);
 
         if(result.isInvalid()){
             throw new ValidationException(result.getInvalidFieldList());
@@ -76,8 +66,8 @@ public class TaskService {
         return repository.save(task);
     }
 
-    public void delete(Long id){
-        if(!repository.existsById(id)){
+    public void delete(Long id, Long userId){
+        if(!repository.existsByIdAndUserId(id, userId)){
             throw new ResourceNotFoundException("Task not found. Id: " + id);
         }
 

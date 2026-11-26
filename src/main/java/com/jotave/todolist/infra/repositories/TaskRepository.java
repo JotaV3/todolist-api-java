@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query("""
@@ -25,5 +26,16 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     """)
     List<Task> findAllByUserId(
             @Param("userId") Long userId
+    );
+
+    @Query("""
+        SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END
+        FROM Task t
+        WHERE t.id = :id
+            AND t.user.id = :userId
+    """)
+    boolean existsByIdAndUserId(
+            @Param("id") Long id,
+            @Param("userId")Long userId
     );
 }
