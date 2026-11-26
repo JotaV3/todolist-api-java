@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
 
-public record TaskCreateRequestDTO(
+public record TaskRequestDTO(
     @NotBlank(message = "Title is required.")
     @Size(max = 255, message = "Title must have at most 255 characters.")
     String title,
