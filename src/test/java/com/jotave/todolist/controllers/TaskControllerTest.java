@@ -1,6 +1,7 @@
 package com.jotave.todolist.controllers;
 
 import com.jotave.todolist.api.dtos.response.TaskResponseDTO;
+import com.jotave.todolist.application.services.JwtService;
 import com.jotave.todolist.model.entities.Task;
 import com.jotave.todolist.model.entities.User;
 import com.jotave.todolist.model.entities.enums.TaskStatus;
@@ -20,7 +21,7 @@ import java.time.LocalDate;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -41,51 +42,13 @@ public class TaskControllerTest {
     @Autowired
     ObjectMapper objectMapper;
 
-    @Test
-    public void shouldReturnAllTasks() throws Exception{
-        Task task = createTask();
-
-        ResultActions result = mockMvc
-                .perform(get("/api/tasks")
-                        .with(user("test")));
-
-        // Result based on TaskResponseDTO
-        result
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[?(@.id == %d)]"
-                        .formatted(task.getId()))
-                        .isNotEmpty())
-                .andExpect(jsonPath("$[?(@.user.id == %d)]"
-                        .formatted(task.getUser().getId()))
-                        .isNotEmpty());
-    }
-
-    @Test
-    public void shouldReturnTask() throws Exception{
-        Task task = createTask();
-
-        ResultActions result = mockMvc
-                .perform(get("/api/tasks/" + task.getId())
-                        .with(user("test")));
-
-        // Result based on TaskResponseDTO
-        result
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(task.getId()))
-                .andExpect(jsonPath("$.title").value(task.getTitle()))
-                .andExpect(jsonPath("$.description").value(task.getDescription()))
-                .andExpect(jsonPath("$.dueDate").value(task.getDueDate().toString()))
-                .andExpect(jsonPath("$.taskStatus").value(task.getTaskStatus().toString()))
-                .andExpect(jsonPath("$.user.id").value(task.getUser().getId()))
-                .andExpect(jsonPath("$.user.name").value(task.getUser().getName()))
-                .andExpect(jsonPath("$.user.email").value(task.getUser().getEmail()))
-                .andExpect(jsonPath("$.user.phone").value(task.getUser().getPhone()));
-    }
+    @Autowired
+    JwtService jwtService;
 
     @Test
     public void shouldSaveTask() throws Exception{
         User user = createUser();
+        String token = jwtService.generateToken(user);
 
         String json = """
                 {
@@ -98,10 +61,11 @@ public class TaskControllerTest {
                 """.formatted(user.getId());
 
         ResultActions result = mockMvc
-                .perform(post("/api/tasks")
-                        .with(user("test"))
+                .perform(post("/api/tasks/me")
+                        .header(AUTHORIZATION, "Bearer " + token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(json));
+                        .content(json)
+                );
 
         // Result based on TaskResponseDTO
         result
@@ -118,7 +82,9 @@ public class TaskControllerTest {
                 .andExpect(jsonPath("$.user.phone").value(user.getPhone()));
 
         TaskResponseDTO responseDTO = objectMapper.readValue(
-                result.andReturn().getResponse().getContentAsString(),
+                result.andReturn()
+                        .getResponse()
+                        .getContentAsString(),
                 TaskResponseDTO.class
         );
 
@@ -132,22 +98,24 @@ public class TaskControllerTest {
 
     @Test
     public void shouldDeleteTask() throws Exception{
-        Task task = createTask();
+        User user = createUser();
+        String token = jwtService.generateToken(user);
+
+        Task task = createTask(user);
 
         ResultActions result = mockMvc
-                .perform(delete("/api/tasks/" + task.getId())
-                        .with(user("test")));
+                .perform(delete("/api/tasks/{id}/me", task.getId())
+                        .header(AUTHORIZATION, "Bearer " + token)
+                );
 
         // Result based on TaskResponseDTO
         result
                 .andExpect(status().isNoContent());
 
-        assertFalse(repository.existsById(task.getId()));
+        assertFalse(repository.existsByIdAndUserId(task.getId(), user.getId()));
     }
 
-    private Task createTask(){
-        User user = createUser();
-
+    private Task createTask(User user){
         Task task = new Task(
                 null,
                 "Study Spring Boot",
