@@ -29,10 +29,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
 
     @Query("""
-        SELECT t
+        SELECT CASE WHEN COUNT(t) > 0 THEN true ELSE false END
         FROM Task t
         WHERE t.id = :id
-        AND t.user.id = :userId
+            AND t.user.id = :userId
     """)
     boolean existsByIdAndUserId(
             @Param("id") Long id,
