@@ -34,7 +34,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
         WHERE t.id = :id
         AND t.user.id = :userId
     """)
-    Optional<Task> existsByIdAndUserId(
+    boolean existsByIdAndUserId(
             @Param("id") Long id,
             @Param("userId")Long userId
     );
