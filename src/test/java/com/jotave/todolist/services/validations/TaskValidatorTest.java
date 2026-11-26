@@ -27,43 +27,32 @@ public class TaskValidatorTest {
 
     @Test
     public void shouldAllowCreateWhenTitleIsNotDuplicated(){
-        var dto = createTaskCreateRequestDTO();
+        TaskRequestDTO dto = createTaskRequestDTO();
 
-        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
+        Long userId = 1L;
+
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", userId))
                 .thenReturn(Collections.emptyList());
 
-        var result = validator.validateTaskCreateRequestDTO(dto);
+        var result = validator.validateTaskRequestDTO(null, userId, dto);
 
         assertFalse(result.isInvalid());
     }
 
     @Test
-    public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringCreate(){
-        var dto = createTaskCreateRequestDTO();
+    public void shouldRejectTitleAlreadyUsedByAnotherTask(){
+        TaskRequestDTO dto = createTaskRequestDTO();
 
+        // this task is a simulation of a task already created in the database
         Task otherTask = new Task();
-        otherTask.setId(2L);
+        otherTask.setId(1L);
 
-        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 1L))
+        Long userId = 1L;
+
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", userId))
                 .thenReturn(Collections.singletonList(otherTask));
 
-        var result = validator.validateTaskCreateRequestDTO(dto);
-
-        assertTrue(result.isInvalid());
-        assertEquals("title", result.getInvalidFieldList().getFirst().name());
-    }
-
-    @Test
-    public void shouldRejectTitleAlreadyUsedByAnotherTaskDuringUpdate(){
-        var dto = createTaskUpdateRequestDTO();
-
-        Task otherTask = new Task();
-        otherTask.setId(2L);
-
-        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 5L))
-                .thenReturn(Collections.singletonList(otherTask));
-
-        var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
+        var result = validator.validateTaskRequestDTO(null, userId, dto);
 
         assertTrue(result.isInvalid());
         assertEquals("title", result.getInvalidFieldList().getFirst().name());
@@ -71,29 +60,25 @@ public class TaskValidatorTest {
 
     @Test
     public void shouldNotRejectOwnTitleDuringUpdate(){
-        var dto = createTaskUpdateRequestDTO();
+        Long id = 1L; // task ID
+        Long userId = 1L;
 
-        Task ownTask = new Task();
-        ownTask.setId(1L);
+        // updated task data
+        TaskRequestDTO dto = createTaskRequestDTO();
 
-        when(repository.findTaskByTitleAndUserId("Study Spring Boot", 5L))
-                .thenReturn(Collections.singletonList(ownTask));
+        // this task is a simulation of a task already created in the database
+        Task task = new Task();
+        task.setId(id);
 
-        var result = validator.validateTaskUpdateRequestDTO(1L, dto, 5L);
+        when(repository.findTaskByTitleAndUserId("Study Spring Boot", userId))
+                .thenReturn(Collections.singletonList(task));
+
+        var result = validator.validateTaskRequestDTO(id, userId, dto);
 
         assertFalse(result.isInvalid());
     }
 
-    private TaskRequestDTO createTaskCreateRequestDTO(){
-        return new TaskRequestDTO(
-                "Study Spring Boot",
-                "",
-                LocalDate.of(2026, 11, 10),
-                2
-        );
-    }
-
-    private TaskRequestDTO createTaskUpdateRequestDTO(){
+    private TaskRequestDTO createTaskRequestDTO(){
         return new TaskRequestDTO(
                 "Study Spring Boot",
                 "",
