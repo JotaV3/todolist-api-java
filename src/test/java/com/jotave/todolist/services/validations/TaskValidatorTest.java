@@ -1,8 +1,7 @@
 package com.jotave.todolist.services.validations;
 
+import com.jotave.todolist.api.dtos.request.TaskRequestDTO;
 import com.jotave.todolist.application.validations.TaskValidator;
-import com.jotave.todolist.api.dtos.request.TaskCreateRequestDTO;
-import com.jotave.todolist.api.dtos.request.TaskUpdateRequestDTO;
 import com.jotave.todolist.model.entities.Task;
 import com.jotave.todolist.infra.repositories.TaskRepository;
 import org.junit.jupiter.api.Test;
@@ -85,18 +84,17 @@ public class TaskValidatorTest {
         assertFalse(result.isInvalid());
     }
 
-    private TaskCreateRequestDTO createTaskCreateRequestDTO(){
-        return new TaskCreateRequestDTO(
+    private TaskRequestDTO createTaskCreateRequestDTO(){
+        return new TaskRequestDTO(
                 "Study Spring Boot",
                 "",
                 LocalDate.of(2026, 11, 10),
-                2,
-                1L
+                2
         );
     }
 
-    private TaskUpdateRequestDTO createTaskUpdateRequestDTO(){
-        return new TaskUpdateRequestDTO(
+    private TaskRequestDTO createTaskUpdateRequestDTO(){
+        return new TaskRequestDTO(
                 "Study Spring Boot",
                 "",
                 LocalDate.of(2026, 11, 10),
