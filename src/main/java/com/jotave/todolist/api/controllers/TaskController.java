@@ -58,7 +58,7 @@ public class TaskController {
     @PutMapping("/{id}/me")
     public ResponseEntity<TaskResponseDTO> update(
             @AuthenticationPrincipal Jwt jwt,
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody TaskRequestDTO dto
     ){
         Long userId = getUserIdByJwt(jwt);
@@ -70,7 +70,7 @@ public class TaskController {
     @DeleteMapping("/{id}/me")
     public ResponseEntity<Void> delete(
             @AuthenticationPrincipal Jwt jwt,
-            @PathVariable Long id
+            @PathVariable("id") Long id
     ){
         Long userId = getUserIdByJwt(jwt);
         service.delete(id, userId);
