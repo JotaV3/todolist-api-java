@@ -1,104 +1,141 @@
 # To-Do List API
 
-A RESTful API for managing users and their tasks, built with Java, Spring Boot, and Spring Data JPA.
+REST API para cadastro de usuários e gerenciamento de tarefas, construída com Java 25 e Spring Boot. O projeto utiliza Spring Security com JWT, Spring Data JPA e H2, com suporte ao driver PostgreSQL.
 
-This project is part of my backend development journey. It explores REST API design, data persistence, validation, DTOs, mapping, exception handling, and automated testing.
+> **Status:** projeto em desenvolvimento.
 
-> **Project status:** Work in progress
+## Funcionalidades
 
-## Features
+- Registro de usuários com geração automática de token JWT.
+- Consulta, atualização e exclusão do usuário autenticado.
+- Senhas criptografadas antes da persistência.
+- Gerenciamento de tarefas do usuário autenticado.
+- Associação obrigatória entre tarefa e usuário.
+- Validação de dados com Jakarta Bean Validation.
+- Validação personalizada para impedir títulos duplicados por usuário.
+- Status de tarefa representado por código nas requisições e nome nas respostas.
+- DTOs separados para entrada e saída da API.
+- Mapeamento entre entidades e DTOs com MapStruct.
+- Tratamento centralizado de erros e exceções da aplicação.
 
-### User management
+## Tecnologias
 
-- List all users and retrieve a user by ID.
-- Create, update, and delete users.
-- Validate user names, email addresses, phone numbers, and passwords.
-- Return user data through a response DTO that does not expose the password.
+- Java 25
+- Spring Boot 4.1.1
+- Spring Web MVC
+- Spring Security
+- OAuth2 Resource Server com JWT
+- Spring Data JPA e Hibernate
+- Jakarta Bean Validation
+- MapStruct
+- Lombok
+- Maven
+- H2 Database
+- PostgreSQL JDBC Driver
+- JUnit e Spring Test
 
-### Task management
-
-- List all tasks and retrieve a task by ID.
-- Create, update, and delete tasks.
-- Associate each task with an existing user.
-- Store a task title, description, due date, and status.
-- Prevent a user from creating tasks with duplicate titles.
-- Check for duplicate titles when updating a task, while allowing a task to keep its own title.
-- Preserve the task's user association when updating it.
-
-### Validation and error handling
-
-- Validate request data with Jakarta Bean Validation.
-- Apply custom validation to task titles.
-- Handle resource-not-found and database-related errors.
-- Use request and response DTOs to define the API data contract.
-
-## Technologies
-
-- **Java**
-- **Spring Boot**
-- **Spring Web MVC**
-- **Spring Data JPA** and **Hibernate**
-- **Jakarta Bean Validation**
-- **MapStruct**
-- **Lombok**
-- **Maven**
-- **H2** for local development and tests
-- **PostgreSQL JDBC driver** for PostgreSQL connectivity
-
-## Project structure
+## Estrutura do projeto
 
 ```text
 src/
 ├── main/
 │   ├── java/com/jotave/todolist/
-│   │   ├── controllers/       # HTTP endpoints
-│   │   ├── dtos/              # Request and response DTOs
-│   │   ├── entities/          # JPA entities and task status enum
-│   │   ├── mappers/           # DTO/entity mapping with MapStruct
-│   │   ├── repositories/      # Spring Data JPA repositories
-│   │   └── services/          # Business logic, validation, and exceptions
+│   │   ├── api/
+│   │   │   ├── config/          # Segurança e configuração JWT
+│   │   │   ├── controllers/     # Endpoints REST
+│   │   │   ├── dtos/            # Objetos de requisição e resposta
+│   │   │   ├── handlers/        # Tratamento de exceções
+│   │   │   └── mappers/         # Conversão MapStruct
+│   │   ├── application/
+│   │   │   ├── services/        # Regras de negócio e autenticação
+│   │   │   ├── validations/     # Validações específicas
+│   │   │   └── exceptions/      # Exceções da aplicação
+│   │   ├── infra/
+│   │   │   └── repositories/    # Repositórios Spring Data JPA
+│   │   └── model/entities/      # Entidades User e Task
 │   └── resources/
-│       ├── application.yaml
+│       ├── application-dev.yaml
 │       └── application-test.yaml
-└── test/
-    └── java/com/jotave/todolist/
-        ├── controllers/
-        └── services/validations/
+└── test/java/com/jotave/todolist/
+    ├── controllers/             # Testes dos endpoints
+    └── services/validations/    # Testes das validações
 ```
 
-## API
+## Executando localmente
 
-The application runs locally at `http://localhost:8080` by default.
+### Pré-requisitos
 
-### Users
+- Git
+- JDK 25
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/users` | List all users |
-| `GET` | `/users/{id}` | Retrieve a user |
-| `POST` | `/users` | Create a user |
-| `PUT` | `/users/{id}` | Update a user |
-| `DELETE` | `/users/{id}` | Delete a user |
+### Clonar
 
-### Tasks
+```bash
+git clone https://github.com/JotaV3/todolist-api-java.git
+cd todolist-api-java
+```
 
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| `GET` | `/tasks` | List all tasks |
-| `GET` | `/tasks/{id}` | Retrieve a task |
-| `POST` | `/tasks` | Create a task |
-| `PUT` | `/tasks/{id}` | Update a task |
-| `DELETE` | `/tasks/{id}` | Delete a task |
+### Linux/macOS
 
-Creating a user or task returns `201 Created` and a `Location` header. Successful deletions return `204 No Content`.
+```bash
+./mvnw spring-boot:run
+```
 
-## Example requests
+### Windows
 
-### Create a user
+```powershell
+.\mvnw.cmd spring-boot:run
+```
 
-`POST /users`
+A API ficará disponível em `http://localhost:8080`.
 
-```json
+## Configuração
+
+O perfil de desenvolvimento usa um banco H2 persistido em arquivo:
+
+```text
+jdbc:h2:file:./data/todolist-db
+```
+
+O console do H2 fica disponível em:
+
+```text
+http://localhost:8080/h2-console
+```
+
+Credenciais configuradas:
+
+| Configuração | Valor |
+| --- | --- |
+| JDBC URL | `jdbc:h2:file:./data/todolist-db` |
+| Usuário | `sa` |
+| Senha | `sa` |
+
+Os testes usam H2 em memória e recriam o esquema automaticamente. A configuração JWT está em `src/main/resources/application-dev.yaml`:
+
+```yaml
+app:
+  jwt:
+    secret: local-development-only-jwt-secret-change-before-deploying
+    expiration-seconds: 3600
+```
+
+> Altere o segredo JWT antes de publicar a aplicação.
+
+## Autenticação
+
+Todas as rotas, exceto `POST /auth/register`, exigem um Bearer Token.
+
+```http
+Authorization: Bearer <jwt>
+```
+
+### Registrar usuário
+
+```http
+POST /auth/register
+Content-Type: application/json
+
 {
   "name": "Jane Doe",
   "email": "jane@example.com",
@@ -107,141 +144,101 @@ Creating a user or task returns `201 Created` and a `Location` header. Successfu
 }
 ```
 
-The response includes the generated user ID and public user fields; it does not include the password.
+A resposta contém o token JWT, o tipo do token, o tempo de expiração e o nome do usuário.
 
-### Create a task
+## Endpoints
 
-`POST /tasks`
+### Usuário autenticado
 
-```json
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/users/me` | Consulta os dados do usuário autenticado |
+| `PUT` | `/api/users/me` | Atualiza os dados do usuário autenticado |
+| `DELETE` | `/api/users/me` | Remove o usuário autenticado |
+
+### Tarefas do usuário autenticado
+
+| Método | Endpoint | Descrição |
+| --- | --- | --- |
+| `GET` | `/api/tasks/me` | Lista todas as tarefas do usuário autenticado |
+| `POST` | `/api/tasks/me` | Cria uma tarefa para o usuário autenticado |
+| `PUT` | `/api/tasks/{id}/me` | Atualiza uma tarefa do usuário autenticado |
+| `DELETE` | `/api/tasks/{id}/me` | Remove uma tarefa do usuário autenticado |
+
+## Exemplos de tarefas
+
+### Criar tarefa
+
+```http
+POST /api/tasks/me
+Authorization: Bearer <jwt>
+Content-Type: application/json
+
 {
-  "title": "Study Java",
-  "description": "Practice Spring Boot",
-  "dueDate": "2026-12-31",
-  "taskStatusCode": 2,
-  "userId": 1
-}
-```
-
-`dueDate` uses the `YYYY-MM-DD` format. The `userId` must refer to an existing user. Task titles must be unique for each user.
-
-### Update a task
-
-`PUT /tasks/1`
-
-```json
-{
-  "title": "Study Spring Boot",
-  "description": "Build a REST API",
+  "title": "Estudar Java",
+  "description": "Praticar Spring Boot",
   "dueDate": "2026-12-31",
   "taskStatusCode": 2
 }
 ```
 
-The task ID is provided in the URL. The update request does not include a `userId`, so the existing user association is preserved.
+O campo `dueDate` usa o formato `YYYY-MM-DD`. O título deve ser único entre as tarefas do mesmo usuário.
 
-### Retrieve a task
+### Atualizar tarefa
 
-`GET /tasks/1`
+```http
+PUT /api/tasks/1/me
+Authorization: Bearer <jwt>
+Content-Type: application/json
 
-Example response:
-
-```json
 {
-  "id": 1,
-  "title": "Study Spring Boot",
-  "description": "Build a REST API",
+  "title": "Estudar Spring Boot",
+  "description": "Construir uma API REST",
   "dueDate": "2026-12-31",
-  "taskStatus": "InProgress",
-  "user": {
-    "id": 1,
-    "name": "Jane Doe",
-    "email": "jane@example.com",
-    "phone": "5551234567"
-  }
+  "taskStatusCode": 2
 }
 ```
 
-### Task status
+### Status das tarefas
 
-Requests use the numeric `taskStatusCode`; responses include the corresponding status name.
-
-| Code | Status |
+| Código | Status |
 | --- | --- |
 | `1` | `Completed` |
 | `2` | `InProgress` |
 | `3` | `Paused` |
 
-## Run locally
+## Testes
 
-### Prerequisites
-
-- Git
-- A JDK compatible with the project's Maven configuration
-
-### Clone the repository
-
-```bash
-git clone https://github.com/JotaV3/todolist-api-java.git
-cd todolist-api-java
-```
-
-### Start the application
-
-On Linux or macOS:
-
-```bash
-./mvnw spring-boot:run
-```
-
-On Windows:
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-The API will be available at `http://localhost:8080`.
-
-### Run the tests
-
-On Linux or macOS:
+### Linux/macOS
 
 ```bash
 ./mvnw test
 ```
 
-On Windows:
+### Windows
 
 ```powershell
 .\mvnw.cmd test
 ```
 
-You can test the endpoints with Postman, Insomnia, or another HTTP client.
+O projeto também executa testes e build pelo GitHub Actions em pushes para `main` e pull requests.
 
-## Database
+## CI/CD
 
-The default configuration uses a file-based H2 database:
+A workflow `.github/workflows/ci.yml` usa Java Temurin 25 e executa:
 
-```text
-jdbc:h2:file:./data/todolist-db
+```bash
+./mvnw test
+./mvnw package -DskipTests
 ```
 
-The H2 Console is enabled at:
+## Desenvolvimento
 
-```text
-http://localhost:8080/h2-console
-```
+- Convenções REST e códigos HTTP para criação e exclusão.
+- Divisão da aplicação em camadas API, aplicação, infraestrutura e domínio.
+- Uso de H2 em desenvolvimento e testes.
+- Testes de controllers, serviços e validações.
 
-Use the following connection settings:
+## Autor
 
-| Setting | Value |
-| --- | --- |
-| JDBC URL | `jdbc:h2:file:./data/todolist-db` |
-| Username | `sa` |
-| Password | `sa` |
-
-The test profile uses an in-memory H2 database and recreates the schema for tests. A PostgreSQL JDBC driver is included in the project, while H2 is used by the default application configuration.
-
-##
-
-**Developer:** [JotaV3](https://github.com/JotaV3)
+Desenvolvido por [JotaV3](https://github.com/JotaV3).
