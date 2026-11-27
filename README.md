@@ -122,6 +122,28 @@ app:
 
 > Altere o segredo JWT antes de publicar a aplicação.
 
+## Deploy no Render
+
+O repositório está preparado para deploy como serviço Docker no Render, usando PostgreSQL gerenciado:
+
+1. Crie um banco PostgreSQL no Render e um **Web Service** conectado a este repositório. Selecione **Docker** como runtime e a branch que deseja publicar.
+2. No serviço web, abra **Environment** e configure as variáveis abaixo usando os dados de conexão **internos** do banco Render. Não use a URL externa do banco para conectar a partir do serviço hospedado no Render.
+
+| Variável | Valor |
+| --- | --- |
+| `DB_HOST` | Host interno do PostgreSQL |
+| `DB_PORT` | Porta do PostgreSQL (normalmente `5432`) |
+| `DB_NAME` | Nome do banco |
+| `DB_USER` | Usuário do banco |
+| `DB_PASSWORD` | Senha do banco |
+| `JWT_SECRET` | Segredo aleatório com pelo menos 32 bytes |
+
+O Render fornece `PORT` para o serviço web; a aplicação a utiliza automaticamente. O Dockerfile ativa o perfil `prod`, que desativa o console H2 e configura o PostgreSQL. Não configure `SPRING_PROFILES_ACTIVE` para `dev` no serviço de produção.
+
+Gere um segredo localmente com `openssl rand -base64 32` e salve-o como `JWT_SECRET` nas variáveis do serviço Render. Não o coloque no código, no Git ou em logs. Depois de salvar as variáveis, faça o deploy e use a URL pública exibida pelo Render para testar a API. O banco e a aplicação devem estar na mesma região para usar o endereço interno.
+
+O schema é atualizado pelo Hibernate (`ddl-auto: update`) para facilitar o primeiro deploy. Para uma aplicação com dados importantes, configure migrações versionadas antes de evoluir o schema em produção.
+
 ## Autenticação
 
 Todas as rotas, exceto `POST /auth/register`, exigem um Bearer Token.
