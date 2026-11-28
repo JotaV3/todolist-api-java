@@ -1,83 +1,83 @@
 # To-Do List API
 
-REST API para cadastro de usuários e gerenciamento de tarefas, construída com Java 25 e Spring Boot. O projeto utiliza Spring Security com JWT, Spring Data JPA e suporte aos bancos H2 e PostgreSQL.
+A REST API for user registration and task management, built with Java 25 and Spring Boot. The project uses Spring Security with JWT, Spring Data JPA, and support for H2 and PostgreSQL databases.
 
-> **Status:** projeto em desenvolvimento.
+> **Status:** Work in progress.
 
-## 🚀 Aplicação online
+## 🚀 Live application
 
-A API está disponível em produção no Render:
+The API is available in production on Render:
 
 **https://todolist-api-java-y415.onrender.com**
 
-## Funcionalidades
+## Features
 
-- Registro de usuários com geração automática de token JWT.
-- Consulta, atualização e exclusão do usuário autenticado.
-- Senhas criptografadas antes da persistência.
-- Gerenciamento de tarefas do usuário autenticado.
-- Associação obrigatória entre tarefa e usuário.
-- Validação de dados com Jakarta Bean Validation.
-- Validação personalizada para impedir títulos duplicados por usuário.
-- Status de tarefa representado por código nas requisições e nome nas respostas.
-- DTOs separados para entrada e saída da API.
-- Mapeamento entre entidades e DTOs com MapStruct.
-- Tratamento centralizado de erros e exceções da aplicação.
-- Deploy em produção utilizando Render e PostgreSQL.
+- User registration with automatic JWT token generation.
+- Authenticated user retrieval, update, and deletion.
+- Password encryption before persistence.
+- Task management for authenticated users.
+- Mandatory association between each task and its user.
+- Data validation with Jakarta Bean Validation.
+- Custom validation to prevent duplicate task titles for the same user.
+- Task status represented by a code in requests and a name in responses.
+- Separate DTOs for API requests and responses.
+- Entity-to-DTO mapping with MapStruct.
+- Centralized application error and exception handling.
+- Production deployment using Render and PostgreSQL.
 
-## Tecnologias
+## Technologies
 
 - Java 25
 - Spring Boot 4.1.1
 - Spring Web MVC
 - Spring Security
-- OAuth2 Resource Server com JWT
-- Spring Data JPA e Hibernate
+- OAuth2 Resource Server with JWT
+- Spring Data JPA and Hibernate
 - Jakarta Bean Validation
 - MapStruct
 - Lombok
 - Maven
 - H2 Database
 - PostgreSQL JDBC Driver
-- JUnit e Spring Test
+- JUnit and Spring Test
 - Docker
 - Render
 
-## Estrutura do projeto
+## Project structure
 
 ```text
 src/
 ├── main/
 │   ├── java/com/jotave/todolist/
 │   │   ├── api/
-│   │   │   ├── config/          # Segurança e configuração JWT
-│   │   │   ├── controllers/     # Endpoints REST
-│   │   │   ├── dtos/            # Objetos de requisição e resposta
-│   │   │   ├── handlers/        # Tratamento de exceções
-│   │   │   └── mappers/         # Conversão MapStruct
+│   │   │   ├── config/          # Security and JWT configuration
+│   │   │   ├── controllers/     # REST endpoints
+│   │   │   ├── dtos/            # Request and response objects
+│   │   │   ├── handlers/        # Exception handling
+│   │   │   └── mappers/         # MapStruct conversions
 │   │   ├── application/
-│   │   │   ├── services/        # Regras de negócio e autenticação
-│   │   │   ├── validations/     # Validações específicas
-│   │   │   └── exceptions/      # Exceções da aplicação
+│   │   │   ├── services/        # Business rules and authentication
+│   │   │   ├── validations/     # Custom validations
+│   │   │   └── exceptions/      # Application exceptions
 │   │   ├── infra/
-│   │   │   └── repositories/    # Repositórios Spring Data JPA
-│   │   └── model/entities/      # Entidades User e Task
+│   │   │   └── repositories/    # Spring Data JPA repositories
+│   │   └── model/entities/      # User and Task entities
 │   └── resources/
 │       ├── application-dev.yaml
 │       └── application-test.yaml
 └── test/java/com/jotave/todolist/
-    ├── controllers/             # Testes dos endpoints
-    └── services/validations/    # Testes das validações
+    ├── controllers/             # Endpoint tests
+    └── services/validations/    # Validation tests
 ```
 
-## Executando localmente
+## Running locally
 
-### Pré-requisitos
+### Prerequisites
 
 - Git
 - JDK 25
 
-### Clonar
+### Clone the repository
 
 ```bash
 git clone https://github.com/JotaV3/todolist-api-java.git
@@ -96,31 +96,31 @@ cd todolist-api-java
 .\mvnw.cmd spring-boot:run
 ```
 
-A API ficará disponível em `http://localhost:8080`.
+The API will be available at `http://localhost:8080`.
 
-## Configuração
+## Configuration
 
-O perfil de desenvolvimento usa um banco H2 persistido em arquivo:
+The development profile uses an H2 database persisted to a file:
 
 ```text
 jdbc:h2:file:./data/todolist-db
 ```
 
-O console do H2 fica disponível em:
+The H2 console is available at:
 
 ```text
 http://localhost:8080/h2-console
 ```
 
-Credenciais configuradas:
+Configured credentials:
 
-| Configuração | Valor |
+| Configuration | Value |
 | --- | --- |
 | JDBC URL | `jdbc:h2:file:./data/todolist-db` |
-| Usuário | `sa` |
-| Senha | `sa` |
+| Username | `sa` |
+| Password | `sa` |
 
-Os testes usam H2 em memória e recriam o esquema automaticamente. A configuração JWT está em `src/main/resources/application-dev.yaml`:
+Tests use an in-memory H2 database and recreate the schema automatically. JWT configuration is located in `src/main/resources/application-dev.yaml`:
 
 ```yaml
 app:
@@ -129,44 +129,44 @@ app:
     expiration-seconds: 3600
 ```
 
-> Altere o segredo JWT antes de publicar a aplicação.
+> Change the JWT secret before publishing the application.
 
-## Deploy no Render
+## Render deployment
 
-O projeto está preparado para deploy como serviço Docker no Render, utilizando PostgreSQL gerenciado.
+The project is prepared for deployment as a Docker service on Render, using a managed PostgreSQL database.
 
-Configure as seguintes variáveis de ambiente no Web Service do Render:
+Configure the following environment variables in the Render Web Service:
 
-| Variável | Valor |
+| Variable | Value |
 | --- | --- |
-| `DB_HOST` | Host interno do PostgreSQL |
-| `DB_PORT` | Porta do PostgreSQL, normalmente `5432` |
-| `DB_NAME` | Nome do banco |
-| `DB_USER` | Usuário do banco |
-| `DB_PASSWORD` | Senha do banco |
-| `JWT_SECRET` | Segredo aleatório com pelo menos 32 bytes |
+| `DB_HOST` | Internal PostgreSQL host |
+| `DB_PORT` | PostgreSQL port, usually `5432` |
+| `DB_NAME` | Database name |
+| `DB_USER` | Database user |
+| `DB_PASSWORD` | Database password |
+| `JWT_SECRET` | Random secret with at least 32 bytes |
 
-O Render fornece a variável `PORT` para o serviço web, e a aplicação a utiliza automaticamente. O Dockerfile ativa o perfil `prod`, desativa o console H2 e configura o PostgreSQL.
+Render provides the `PORT` environment variable to the web service, and the application uses it automatically. The Dockerfile activates the `prod` profile, disables the H2 console, and configures PostgreSQL.
 
-Gere um segredo seguro localmente com:
+Generate a secure secret locally with:
 
 ```bash
 openssl rand -base64 32
 ```
 
-Não coloque o valor de `JWT_SECRET` no código, no Git ou em logs.
+Do not put the `JWT_SECRET` value in the source code, Git, or logs.
 
-O schema é atualizado pelo Hibernate (`ddl-auto: update`) para facilitar o primeiro deploy. Para uma aplicação com dados importantes, configure migrações versionadas antes de evoluir o schema.
+The schema is updated by Hibernate (`ddl-auto: update`) to simplify the initial deployment. For an application with important data, configure versioned migrations before evolving the schema.
 
-## Autenticação
+## Authentication
 
-Todas as rotas, exceto `POST /auth/register`, exigem um Bearer Token.
+All routes except `POST /auth/register` require a Bearer Token.
 
 ```http
 Authorization: Bearer <jwt>
 ```
 
-### Registrar usuário
+### Register a user
 
 ```http
 POST /auth/register
@@ -180,30 +180,30 @@ Content-Type: application/json
 }
 ```
 
-A resposta contém o token JWT, o tipo do token, o tempo de expiração e o nome do usuário.
+The response contains the JWT token, token type, expiration time, and username.
 
 ## Endpoints
 
-### Usuário autenticado
+### Authenticated user
 
-| Método | Endpoint | Descrição |
+| Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/api/users/me` | Consulta os dados do usuário autenticado |
-| `PUT` | `/api/users/me` | Atualiza os dados do usuário autenticado |
-| `DELETE` | `/api/users/me` | Remove o usuário autenticado |
+| `GET` | `/api/users/me` | Retrieves the authenticated user's data |
+| `PUT` | `/api/users/me` | Updates the authenticated user's data |
+| `DELETE` | `/api/users/me` | Deletes the authenticated user |
 
-### Tarefas do usuário autenticado
+### Authenticated user's tasks
 
-| Método | Endpoint | Descrição |
+| Method | Endpoint | Description |
 | --- | --- | --- |
-| `GET` | `/api/tasks/me` | Lista todas as tarefas do usuário autenticado |
-| `POST` | `/api/tasks/me` | Cria uma tarefa para o usuário autenticado |
-| `PUT` | `/api/tasks/{id}/me` | Atualiza uma tarefa do usuário autenticado |
-| `DELETE` | `/api/tasks/{id}/me` | Remove uma tarefa do usuário autenticado |
+| `GET` | `/api/tasks/me` | Lists all tasks belonging to the authenticated user |
+| `POST` | `/api/tasks/me` | Creates a task for the authenticated user |
+| `PUT` | `/api/tasks/{id}/me` | Updates a task belonging to the authenticated user |
+| `DELETE` | `/api/tasks/{id}/me` | Deletes a task belonging to the authenticated user |
 
-## Exemplos de tarefas
+## Task examples
 
-### Criar tarefa
+### Create a task
 
 ```http
 POST /api/tasks/me
@@ -211,16 +211,16 @@ Authorization: Bearer <jwt>
 Content-Type: application/json
 
 {
-  "title": "Estudar Java",
-  "description": "Praticar Spring Boot",
+  "title": "Study Java",
+  "description": "Practice Spring Boot",
   "dueDate": "2026-12-31",
   "taskStatusCode": 2
 }
 ```
 
-O campo `dueDate` usa o formato `YYYY-MM-DD`. O título deve ser único entre as tarefas do mesmo usuário.
+The `dueDate` field uses the `YYYY-MM-DD` format. The title must be unique among the user's tasks.
 
-### Atualizar tarefa
+### Update a task
 
 ```http
 PUT /api/tasks/1/me
@@ -228,22 +228,22 @@ Authorization: Bearer <jwt>
 Content-Type: application/json
 
 {
-  "title": "Estudar Spring Boot",
-  "description": "Construir uma API REST",
+  "title": "Study Spring Boot",
+  "description": "Build a REST API",
   "dueDate": "2026-12-31",
   "taskStatusCode": 2
 }
 ```
 
-### Status das tarefas
+### Task statuses
 
-| Código | Status |
+| Code | Status |
 | --- | --- |
 | `1` | `Completed` |
 | `2` | `InProgress` |
 | `3` | `Paused` |
 
-## Testes
+## Tests
 
 ### Linux/macOS
 
@@ -257,25 +257,25 @@ Content-Type: application/json
 .\mvnw.cmd test
 ```
 
-O projeto também executa testes e build pelo GitHub Actions em pushes para `main` e pull requests.
+The project also runs tests and builds through GitHub Actions on pushes to `main` and pull requests.
 
 ## CI/CD
 
-A workflow `.github/workflows/ci.yml` usa Java Temurin 25 e executa:
+The `.github/workflows/ci.yml` workflow uses Java Temurin 25 and runs:
 
 ```bash
 ./mvnw test
 ./mvnw package -DskipTests
 ```
 
-## Desenvolvimento
+## Development
 
-- Convenções REST e códigos HTTP para criação e exclusão.
-- Divisão da aplicação em camadas API, aplicação, infraestrutura e domínio.
-- Uso de H2 em desenvolvimento e testes.
-- PostgreSQL em produção.
-- Testes de controllers, serviços e validações.
+- REST conventions and HTTP status codes for creation and deletion.
+- Application layers divided into API, application, infrastructure, and domain.
+- H2 for development and testing.
+- PostgreSQL in production.
+- Controller, service, and validation tests.
 
-## Autor
+## Author
 
-Desenvolvido por [JotaV3](https://github.com/JotaV3).
+Developed by [JotaV3](https://github.com/JotaV3).
