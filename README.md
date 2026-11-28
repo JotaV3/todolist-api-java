@@ -1,8 +1,14 @@
 # To-Do List API
 
-REST API para cadastro de usuários e gerenciamento de tarefas, construída com Java 25 e Spring Boot. O projeto utiliza Spring Security com JWT, Spring Data JPA e H2, com suporte ao driver PostgreSQL.
+REST API para cadastro de usuários e gerenciamento de tarefas, construída com Java 25 e Spring Boot. O projeto utiliza Spring Security com JWT, Spring Data JPA e suporte aos bancos H2 e PostgreSQL.
 
 > **Status:** projeto em desenvolvimento.
+
+## 🚀 Aplicação online
+
+A API está disponível em produção no Render:
+
+**https://todolist-api-java-y415.onrender.com**
 
 ## Funcionalidades
 
@@ -17,6 +23,7 @@ REST API para cadastro de usuários e gerenciamento de tarefas, construída com 
 - DTOs separados para entrada e saída da API.
 - Mapeamento entre entidades e DTOs com MapStruct.
 - Tratamento centralizado de erros e exceções da aplicação.
+- Deploy em produção utilizando Render e PostgreSQL.
 
 ## Tecnologias
 
@@ -33,6 +40,8 @@ REST API para cadastro de usuários e gerenciamento de tarefas, construída com 
 - H2 Database
 - PostgreSQL JDBC Driver
 - JUnit e Spring Test
+- Docker
+- Render
 
 ## Estrutura do projeto
 
@@ -124,25 +133,30 @@ app:
 
 ## Deploy no Render
 
-O repositório está preparado para deploy como serviço Docker no Render, usando PostgreSQL gerenciado:
+O projeto está preparado para deploy como serviço Docker no Render, utilizando PostgreSQL gerenciado.
 
-1. Crie um banco PostgreSQL no Render e um **Web Service** conectado a este repositório. Selecione **Docker** como runtime e a branch que deseja publicar.
-2. No serviço web, abra **Environment** e configure as variáveis abaixo usando os dados de conexão **internos** do banco Render. Não use a URL externa do banco para conectar a partir do serviço hospedado no Render.
+Configure as seguintes variáveis de ambiente no Web Service do Render:
 
 | Variável | Valor |
 | --- | --- |
 | `DB_HOST` | Host interno do PostgreSQL |
-| `DB_PORT` | Porta do PostgreSQL (normalmente `5432`) |
+| `DB_PORT` | Porta do PostgreSQL, normalmente `5432` |
 | `DB_NAME` | Nome do banco |
 | `DB_USER` | Usuário do banco |
 | `DB_PASSWORD` | Senha do banco |
 | `JWT_SECRET` | Segredo aleatório com pelo menos 32 bytes |
 
-O Render fornece `PORT` para o serviço web; a aplicação a utiliza automaticamente. O Dockerfile ativa o perfil `prod`, que desativa o console H2 e configura o PostgreSQL. Não configure `SPRING_PROFILES_ACTIVE` para `dev` no serviço de produção.
+O Render fornece a variável `PORT` para o serviço web, e a aplicação a utiliza automaticamente. O Dockerfile ativa o perfil `prod`, desativa o console H2 e configura o PostgreSQL.
 
-Gere um segredo localmente com `openssl rand -base64 32` e salve-o como `JWT_SECRET` nas variáveis do serviço Render. Não o coloque no código, no Git ou em logs. Depois de salvar as variáveis, faça o deploy e use a URL pública exibida pelo Render para testar a API. O banco e a aplicação devem estar na mesma região para usar o endereço interno.
+Gere um segredo seguro localmente com:
 
-O schema é atualizado pelo Hibernate (`ddl-auto: update`) para facilitar o primeiro deploy. Para uma aplicação com dados importantes, configure migrações versionadas antes de evoluir o schema em produção.
+```bash
+openssl rand -base64 32
+```
+
+Não coloque o valor de `JWT_SECRET` no código, no Git ou em logs.
+
+O schema é atualizado pelo Hibernate (`ddl-auto: update`) para facilitar o primeiro deploy. Para uma aplicação com dados importantes, configure migrações versionadas antes de evoluir o schema.
 
 ## Autenticação
 
@@ -259,6 +273,7 @@ A workflow `.github/workflows/ci.yml` usa Java Temurin 25 e executa:
 - Convenções REST e códigos HTTP para criação e exclusão.
 - Divisão da aplicação em camadas API, aplicação, infraestrutura e domínio.
 - Uso de H2 em desenvolvimento e testes.
+- PostgreSQL em produção.
 - Testes de controllers, serviços e validações.
 
 ## Autor
